@@ -8,7 +8,6 @@ class State3DMath {
 public:
     double distance(State3D* a, State3D* b);
     double approx_distance(State3D* a, State3D* b);
-    bool connectable(State3D* a, State3D* b);
     void setRandomStateConstraints(State3D _minimums, State3D _maximums);
     State3D getRandomState();
 

@@ -17,10 +17,6 @@ double StateFloaterMath::distance(StateFloater* a, StateFloater* b) {
     return dist;
 }
 
-bool StateFloaterMath::connectable(StateFloater* a, StateFloater* b)  {
-    return true;
-}
-
 void StateFloaterMath::setRandomStateConstraints(StateFloater _minimums, StateFloater _maximums) {
     minimums = _minimums;
     maximums = _maximums;

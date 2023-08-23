@@ -12,10 +12,8 @@ void RRT<State, StateMath, Map>::configureRewiring(bool _enabled, float _neighbo
 
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::rewireAll() {
-    Node<State>* node = graph.first();
-    while (node != nullptr) {
+    for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         rewireNode(node);
-        node = node->next;
     }
     rewireNode(&goal);
 }
@@ -23,8 +21,7 @@ void RRT<State, StateMath, Map>::rewireAll() {
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
     if (target->parent == nullptr) return;
-    Node<State>* node = graph.first();
-    while (node != nullptr) {
+    for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         float approx_distance = state_math.approx_distance(&node->state, &target->state);
         if (approx_distance < neighborhood_distance_threshold) {
             float new_cost = node->cost + state_math.distance(&target->state, &node->state);
@@ -36,21 +33,18 @@ void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
                 }
             }
         }
-        node = node->next;
     }
 }
 
 template<class State, class StateMath, class Map>
-void RRT<State, StateMath, Map>::apply_cost_delta_recursive(Node<State> *node, float cost_delta) {
-    node->cost += cost_delta;
-    Node<State>* i = graph.first();
-    while (i != nullptr) {
-        if (i->parent == node) {
-            apply_cost_delta_recursive(i, cost_delta);
+void RRT<State, StateMath, Map>::apply_cost_delta_recursive(Node<State> *root, float cost_delta) {
+    root->cost += cost_delta;
+    for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
+        if (node->parent == root) {
+            apply_cost_delta_recursive(node, cost_delta);
         }
-        i = i->next;
     }
-    if (goal.parent == node) {
+    if (goal.parent == root) {
         apply_cost_delta_recursive(&goal, cost_delta);
     }
 }

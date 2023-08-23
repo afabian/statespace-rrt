@@ -20,13 +20,13 @@ void main_2d() {
     RRT<State2D,State2DMath,Map2D> rrt_2d;
     State2D start_2d{10*5, 215*5};
     State2D goal_2d(275*5, 15*5);
-    Map2D map_2d("d:/rrt/maps/2d/test1.png");
+    Map2D map_2d("d:/statespace-rrt/maps/2d/test1.png");
     rrt_2d.setStartState(&start_2d);
     rrt_2d.setGoalState(&goal_2d);
     rrt_2d.setMap(&map_2d);
     rrt_2d.configureSampling(5001);
     rrt_2d.configureRewiring(true, 0.05, 10);
-    rrt_2d.configureDebugOutput(true, true, "d:/rrt/output/2d/");
+    rrt_2d.configureDebugOutput(true, true, "d:/statespace-rrt/output/2d/");
     rrt_2d.run();
     cout << "Final 2D path cost: " << rrt_2d.getGoalCost() << endl;
 }
@@ -35,13 +35,13 @@ void main_3d() {
     RRT<State3D,State3DMath,Map3D> rrt_3d;
     State3D start_3d{10, 20, 30};
     State3D goal_3d(100, 100, 100);
-    Map3D map_3d("d:/rrt/maps/3d/test1.txt");
+    Map3D map_3d("d:/statespace-rrt/maps/3d/test1.txt");
     rrt_3d.setStartState(&start_3d);
     rrt_3d.setGoalState(&goal_3d);
     rrt_3d.setMap(&map_3d);
     rrt_3d.configureSampling(5001);
     rrt_3d.configureRewiring(true, 0.05, 10);
-    rrt_3d.configureDebugOutput(true, true, "d:/rrt/output/3d/");
+    rrt_3d.configureDebugOutput(true, true, "d:/statespace-rrt/output/3d/");
     rrt_3d.run();
     cout << "Final 3D path cost: " << rrt_3d.getGoalCost() << endl;
 }
@@ -50,7 +50,7 @@ void main_floater() {
     // RRT<StateFloater,StateFloaterMath,MapFloater> rrt_floater;
     // StateFloater start_floater{10, 20, 30};
     // StateFloater goal_floater(100, 100, 100);
-    // MapFloater map_float('d:/rrt/maps/floater/test1.txt');
+    // MapFloater map_float('d:/statespace-rrt/maps/floater/test1.txt');
 
     // rrt_floater.setStartState(start_floater);
     // rrt_floater.setGoalState(goal_floater);

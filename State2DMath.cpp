@@ -12,10 +12,6 @@ double State2DMath::approx_distance(State2D* a, State2D* b) {
     return fabs(a->x - b->x) + fabs(a->y - b->y);
 }
 
-bool State2DMath::connectable(State2D* a, State2D* b)  {
-    return true; // TODO - Fix RRT to use this!!!!
-}
-
 void State2DMath::setRandomStateConstraints(State2D _minimums, State2D _maximums) {
     minimums = _minimums;
     maximums = _maximums;

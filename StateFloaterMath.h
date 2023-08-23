@@ -7,7 +7,6 @@ class StateFloaterMath {
   
 public:
     double distance(StateFloater* a, StateFloater* b);
-    bool connectable(StateFloater* a, StateFloater* b);
     void setRandomStateConstraints(StateFloater _minimums, StateFloater _maximums);
     StateFloater getRandomState();
 

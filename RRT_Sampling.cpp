@@ -26,7 +26,7 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         if (nearest != nullptr) {
             if (!map->edgeInObstacle(&candidate, &nearest->state)) {
                 float cost = nearest->cost + state_math.distance(&candidate, &nearest->state);
-                if (cost < goal.cost) /* dont add nodes if they're too costly to be a best solution */ {
+                if (cost < goal.cost) /* don't add nodes if they're too costly to be the best solution */ {
                     newnode = graph.addNode(&candidate);
                     newnode->parent = nearest;
                     newnode->cost = cost;
@@ -49,26 +49,22 @@ template <class State, class StateMath, class Map>
 Node<State>* RRT<State,StateMath,Map>::getNearestNode(State* state) {
     float best_distance = DBL_MAX;
     Node<State>* best_node = nullptr;
-    Node<State>* node = graph.first();
-    while (node != nullptr) {
+    for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         float distance = state_math.distance(state, &node->state);
         if (distance < best_distance) {
             best_distance = distance;
             best_node = node;
         }
-        node = node->next;
     }
     return best_node;
 }
 
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::delete_high_cost_nodes(float cost_threshold) {
-    Node<State>* node = graph.first();
-    while (node != nullptr) {
+    for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         if (node->cost > cost_threshold) {
             graph.delNode(node);
         }
-        node = node->next;
     }
 }
 

@@ -8,7 +8,6 @@ class State2DMath {
 public:
     double distance(State2D* a, State2D* b);
     double approx_distance(State2D* a, State2D* b);
-    bool connectable(State2D* a, State2D* b);
     void setRandomStateConstraints(State2D _minimums, State2D _maximums);
     State2D getRandomState();
 
