@@ -8,12 +8,15 @@
 // #include "StateFloater.h"
 // #include "StateFloaterMath.h"
 // #include "MapFloater.h"
+
 #include <iostream>
+#include <cstring>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
-int main(int argc, char* argv[]) {
-
+void main_2d() {
     RRT<State2D,State2DMath,Map2D> rrt_2d;
     State2D start_2d{10*5, 215*5};
     State2D goal_2d(275*5, 15*5);
@@ -21,31 +24,29 @@ int main(int argc, char* argv[]) {
     rrt_2d.setStartState(&start_2d);
     rrt_2d.setGoalState(&goal_2d);
     rrt_2d.setMap(&map_2d);
-    for (int i=0; i<5001; i++) {
-        rrt_2d.runOnce();
-        if ((i < 10) || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i < 10000 && i % 1000 == 0) || (i < 100000 && i % 10000 == 0)) {
-            rrt_2d.renderVis();
-            map_2d.renderVis("d:/rrt/output/2d/test" + to_string(i) + ".png");
-        }
-    }
-    cout << "Final path cost: " << rrt_2d.getGoalCost() << endl;
-    for (int i=0; i<10; i++) {
-        rrt_2d.rewireAll();
-        cout << "Final path cost: " << rrt_2d.getGoalCost() << endl;
-        rrt_2d.renderVis();
-        map_2d.renderVis("d:/rrt/output/2d/test_rewire_" + to_string(i) + ".png");
-    }
+    rrt_2d.configureSampling(5001);
+    rrt_2d.configureRewiring(true, 0.05, 10);
+    rrt_2d.configureDebugOutput(true, true, "d:/rrt/output/2d/");
+    rrt_2d.run();
+    cout << "Final 2D path cost: " << rrt_2d.getGoalCost() << endl;
+}
 
+void main_3d() {
     RRT<State3D,State3DMath,Map3D> rrt_3d;
     State3D start_3d{10, 20, 30};
     State3D goal_3d(100, 100, 100);
     Map3D map_3d("d:/rrt/maps/3d/test1.txt");
-
     rrt_3d.setStartState(&start_3d);
     rrt_3d.setGoalState(&goal_3d);
     rrt_3d.setMap(&map_3d);
-    rrt_3d.runOnce();
+    rrt_3d.configureSampling(5001);
+    rrt_3d.configureRewiring(true, 0.05, 10);
+    rrt_3d.configureDebugOutput(true, true, "d:/rrt/output/3d/");
+    rrt_3d.run();
+    cout << "Final 3D path cost: " << rrt_3d.getGoalCost() << endl;
+}
 
+void main_floater() {
     // RRT<StateFloater,StateFloaterMath,MapFloater> rrt_floater;
     // StateFloater start_floater{10, 20, 30};
     // StateFloater goal_floater(100, 100, 100);
@@ -55,6 +56,24 @@ int main(int argc, char* argv[]) {
     // rrt_floater.setGoalState(goal_floater);
     // rrt_floater.setMap(&map_floater);
     // rrt_floater.runOnce();
+}
+
+int main(int argc, char* argv[]) {
+    auto start = high_resolution_clock::now();
+
+    if (strcmp(argv[1], "2d") == 0) {
+        main_2d();
+    }
+    if (strcmp(argv[1], "3d") == 0) {
+        main_3d();
+    }
+    if (strcmp(argv[1], "floater") == 0) {
+        main_floater();
+    }
+
+    auto finish = high_resolution_clock::now();
+    auto elapsed = duration_cast<milliseconds>(finish - start);
+    cout << "Elapsed time: " << ((double)elapsed.count()/1000) << endl;
 
     return 0;
 }

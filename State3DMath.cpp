@@ -9,6 +9,10 @@ double State3DMath::distance(State3D* a, State3D* b) {
     return dist;
 }
 
+double State3DMath::approx_distance(State3D* a, State3D* b) {
+    return fabs(a->x - b->x) + fabs(a->y - b->y) + fabs(a->z - b->z);
+}
+
 bool State3DMath::connectable(State3D* a, State3D* b)  {
     return true;
 }

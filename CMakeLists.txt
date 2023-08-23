@@ -11,10 +11,11 @@ include_directories(${PNG_INCLUDE_DIR})
 add_executable(main
         RRTGraph.cpp
         RRTGraph.h
-        Graph.cpp
-        Graph.h
         main.cpp
         RRT.cpp
+        RRT_Rewire.cpp
+        RRT_Sampling.cpp
+        RRT_Output.cpp
         RRT.h
         State2D.cpp
         State2D.h
@@ -39,15 +40,6 @@ add_executable(main_rrtgraphtest
         RRTGraph.cpp
         RRTGraph.h
         main_rrtgraphtest.cpp
-        State2D.cpp
-        State2D.h
-        State2DMath.cpp
-        State2DMath.h)
-
-add_executable(main_graphtest
-        Graph.cpp
-        Graph.h
-        main_graphtest.cpp
         State2D.cpp
         State2D.h
         State2DMath.cpp
