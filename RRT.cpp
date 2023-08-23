@@ -27,6 +27,8 @@ void RRT<State, StateMath, Map>::setMap(Map *_map) {
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::run() {
 
+    initRandomSamples();
+
     for (int i=0; i<sampling_passes; i++) {
         addRandomSample();
         debugOutputSample(i);

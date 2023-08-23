@@ -24,6 +24,7 @@ public:
     RRTGraph();
     ~RRTGraph();
     Node<State>* addNode(State* _state);
+    Node<State>* addNode(State* _state, Node<State>* _parent, float _cost);
     void delNode(Node<State>*);
     Node<State>* atIndex(int _index);
     Node<State>* first();

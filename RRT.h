@@ -15,10 +15,11 @@ public:
     void setStartState(State* state);
     void setGoalState(State* state);
     void setMap(Map* _map);
-    void configureSampling(int _passes);
+    void configureSampling(int _passes, bool _allow_costly_nodes);
     void configureRewiring(bool _enabled, float _neighborhood_threshold_percent, int _passes);
     void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix);
     void run();
+    void initRandomSamples();
     void addRandomSample();
     void renderVis();
     std::string getDebugText();
@@ -46,6 +47,8 @@ private:
 
     float goal_distance_threshold = 0;
     float neighborhood_distance_threshold = 0;
+
+    bool allow_costly_nodes = false;
 
     int sampling_passes = 1;
 

@@ -18,6 +18,14 @@ RRTGraph<State>::~RRTGraph() {
     delete nodes;
 }
 
+template<class State>
+Node<State> *RRTGraph<State>::addNode(State *_state, Node<State> *_parent, float _cost) {
+    Node<State>* output = addNode(_state);
+    output->parent = _parent;
+    output->cost = _cost;
+    return output;
+}
+
 template <class State>
 Node<State>* RRTGraph<State>::addNode(State* _state) {
     if (nodes_size == RRTGRAPH_MAX_NODE_COUNT) {

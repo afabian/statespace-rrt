@@ -24,7 +24,7 @@ void main_2d() {
     rrt_2d.setStartState(&start_2d);
     rrt_2d.setGoalState(&goal_2d);
     rrt_2d.setMap(&map_2d);
-    rrt_2d.configureSampling(5001);
+    rrt_2d.configureSampling(5001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
     rrt_2d.configureDebugOutput(true, true, "d:/statespace-rrt/output/2d/");
     rrt_2d.run();
@@ -39,7 +39,7 @@ void main_3d() {
     rrt_3d.setStartState(&start_3d);
     rrt_3d.setGoalState(&goal_3d);
     rrt_3d.setMap(&map_3d);
-    rrt_3d.configureSampling(5001);
+    rrt_3d.configureSampling(5001, false);
     rrt_3d.configureRewiring(true, 0.05, 10);
     rrt_3d.configureDebugOutput(true, true, "d:/statespace-rrt/output/3d/");
     rrt_3d.run();

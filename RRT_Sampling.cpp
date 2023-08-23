@@ -6,8 +6,15 @@
 #include <cfloat>
 
 template<class State, class StateMath, class Map>
-void RRT<State, StateMath, Map>::configureSampling(int _passes) {
+void RRT<State, StateMath, Map>::configureSampling(int _passes, bool _allow_costly_nodes) {
     sampling_passes = _passes;
+    allow_costly_nodes = _allow_costly_nodes;
+}
+
+template<class State, class StateMath, class Map>
+void RRT<State, StateMath, Map>::initRandomSamples() {
+    goal_distance_threshold = calc_goal_distance_threshold();
+    neighborhood_distance_threshold = calc_neighborhood_distance_threshold();
 }
 
 template <class State, class StateMath, class Map>
@@ -16,9 +23,6 @@ void RRT<State,StateMath,Map>::addRandomSample() {
     Node<State>* nearest = nullptr;
     Node<State>* newnode = nullptr;
 
-    goal_distance_threshold = calc_goal_distance_threshold();
-    neighborhood_distance_threshold = calc_neighborhood_distance_threshold();
-
     bool suitable_found = false;
     while (!suitable_found) {
         candidate = state_math.getRandomState();
@@ -26,19 +30,19 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         if (nearest != nullptr) {
             if (!map->edgeInObstacle(&candidate, &nearest->state)) {
                 float cost = nearest->cost + state_math.distance(&candidate, &nearest->state);
-                if (cost < goal.cost) /* don't add nodes if they're too costly to be the best solution */ {
-                    newnode = graph.addNode(&candidate);
-                    newnode->parent = nearest;
-                    newnode->cost = cost;
+                if (cost < goal.cost || allow_costly_nodes) {
+                    suitable_found = true;
+                    newnode = graph.addNode(&candidate, nearest, cost);
                     if (state_math.distance(&newnode->state, &goal.state) < goal_distance_threshold) {
                         float goal_cost = newnode->cost + state_math.distance(&newnode->state, &goal.state);
                         if (goal_cost < goal.cost) {
                             goal.cost = goal_cost;
                             goal.parent = newnode;
-                            delete_high_cost_nodes(goal.cost);
+                            if (!allow_costly_nodes) {
+                                delete_high_cost_nodes(goal.cost);
+                            }
                         }
                     }
-                    suitable_found = true;
                 }
             }
         }
