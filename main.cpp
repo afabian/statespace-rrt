@@ -1,10 +1,10 @@
 #include "RRT.h"
-#include "State2D.h"
-#include "State2DMath.h"
-#include "Map2D.h"
-#include "State3D.h"
-#include "State3DMath.h"
-#include "Map3D.h"
+#include "statespace/2d/State2D.h"
+#include "statespace/2d/State2DMath.h"
+#include "statespace/2d/Map2D.h"
+#include "statespace/3d/State3D.h"
+#include "statespace/3d/State3DMath.h"
+#include "statespace/3d/Map3D.h"
 // #include "StateFloater.h"
 // #include "StateFloaterMath.h"
 // #include "MapFloater.h"
@@ -33,8 +33,8 @@ void main_2d() {
 
 void main_3d() {
     RRT<State3D,State3DMath,Map3D> rrt_3d;
-    State3D start_3d{10, 20, 30};
-    State3D goal_3d(100, 100, 100);
+    State3D start_3d{5, 5, 5};
+    State3D goal_3d(95, 95, 95);
     Map3D map_3d("d:/statespace-rrt/maps/3d/test1.txt");
     rrt_3d.setStartState(&start_3d);
     rrt_3d.setGoalState(&goal_3d);

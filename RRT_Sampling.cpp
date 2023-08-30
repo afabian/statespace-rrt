@@ -29,12 +29,12 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         nearest = getNearestNode(&candidate);
         if (nearest != nullptr) {
             if (!map->edgeInObstacle(&candidate, &nearest->state)) {
-                float cost = nearest->cost + state_math.distance(&candidate, &nearest->state);
+                float cost = nearest->cost + map->edgeCost(&candidate, &nearest->state);
                 if (cost < goal.cost || allow_costly_nodes) {
                     suitable_found = true;
                     newnode = graph.addNode(&candidate, nearest, cost);
                     if (state_math.distance(&newnode->state, &goal.state) < goal_distance_threshold) {
-                        float goal_cost = newnode->cost + state_math.distance(&newnode->state, &goal.state);
+                        float goal_cost = newnode->cost + map->edgeCost(&newnode->state, &goal.state);
                         if (goal_cost < goal.cost) {
                             goal.cost = goal_cost;
                             goal.parent = newnode;

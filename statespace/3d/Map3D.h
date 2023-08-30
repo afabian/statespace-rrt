@@ -5,6 +5,14 @@
 #include <string>
 #include <png.h>
 
+#define MAP3D_MAX_OBJECTS 1000
+
+class Map3DObject {
+public:
+    State3D bound_lower;
+    State3D bound_upper;
+};
+
 class Map3D {
 
 public:
@@ -23,6 +31,11 @@ public:
     void renderVis(std::string pngfile);
 
 private:
+    Map3DObject border;
+    Map3DObject objects[MAP3D_MAX_OBJECTS];
+    int object_count = 0;
+
+    const float EDGE_WALK_SCALE = 1.0f;
 
 };
 

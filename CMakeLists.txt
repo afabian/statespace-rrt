@@ -17,22 +17,22 @@ add_executable(main
         RRT_Sampling.cpp
         RRT_Output.cpp
         RRT.h
-        State2D.cpp
-        State2D.h
-        State2DMath.cpp
-        State2DMath.h
-        State3D.cpp
-        State3D.h
-        State3DMath.cpp
-        State3DMath.h
-        StateFloater.cpp
-        StateFloater.h
-        StateFloaterMath.cpp
-        StateFloaterMath.h
-        Map2D.cpp
-        Map2D.h
-        Map3D.cpp
-        Map3D.h)
+        statespace/2d/State2D.cpp
+        statespace/2d/State2D.h
+        statespace/2d/State2DMath.cpp
+        statespace/2d/State2DMath.h
+        statespace/3d/State3D.cpp
+        statespace/3d/State3D.h
+        statespace/3d/State3DMath.cpp
+        statespace/3d/State3DMath.h
+        statespace/floater/StateFloater.cpp
+        statespace/floater/StateFloater.h
+        statespace/floater/StateFloaterMath.cpp
+        statespace/floater/StateFloaterMath.h
+        statespace/2d/Map2D.cpp
+        statespace/2d/Map2D.h
+        statespace/3d/Map3D.cpp
+        statespace/3d/Map3D.h)
 
 target_link_libraries(main ${PNG_LIBRARY})
 
@@ -40,7 +40,7 @@ add_executable(main_rrtgraphtest
         RRTGraph.cpp
         RRTGraph.h
         main_rrtgraphtest.cpp
-        State2D.cpp
-        State2D.h
-        State2DMath.cpp
-        State2DMath.h)
+        statespace/2d/State2D.cpp
+        statespace/2d/State2D.h
+        statespace/2d/State2DMath.cpp
+        statespace/2d/State2DMath.h)
