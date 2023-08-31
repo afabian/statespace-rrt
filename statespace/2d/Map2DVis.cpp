@@ -37,10 +37,10 @@ void Map2D::renderVis(std::string pngfile) {
     write_png(pngfile);
 }
 
-void Map2D::write_png(std::string pngfile) {
+void Map2D::write_png(std::string filename_prefix) {
     int y;
 
-    FILE *fp = fopen(pngfile.c_str(), "wb");
+    FILE *fp = fopen((filename_prefix + ".png").c_str(), "wb");
     if(!fp) abort();
 
     png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);

@@ -65,24 +65,3 @@ float Map3D::edgeCost(State3D *pointA, State3D *pointB) {
     }
     return iterations == 0 ? 0 : sum / iterations * length;
 }
-
-void Map3D::resetVis() {
-
-}
-
-void Map3D::addVisPoint(State3D *point, int color) {
-
-}
-
-void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
-
-}
-
-void Map3D::renderVis(std::string pngfile) {
-
-}
-
-void Map3D::getBounds(State3D *minimums, State3D *maximums) {
-    *minimums = border.bound_lower;
-    *maximums = border.bound_upper;
-}

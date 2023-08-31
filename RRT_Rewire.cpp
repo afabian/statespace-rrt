@@ -24,7 +24,7 @@ void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
     for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         float approx_distance = state_math.approx_distance(&node->state, &target->state);
         if (approx_distance < neighborhood_distance_threshold) {
-            float new_cost = node->cost + state_math.distance(&target->state, &node->state);
+            float new_cost = node->cost + map->edgeCost(&target->state, &node->state);
             if (new_cost < target->cost) {
                 if (!map->edgeInObstacle(&node->state, &target->state)) {
                     target->parent = node;
@@ -53,7 +53,7 @@ template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::debugOutputRewire(int i) {
     if (rewire_output_enabled) {
         renderVis();
-        map->renderVis(debug_output_prefix + "/rewire_" + to_string(i) + ".png");
+        map->renderVis(debug_output_prefix + "/rewire_" + to_string(i));
     }
 }
 

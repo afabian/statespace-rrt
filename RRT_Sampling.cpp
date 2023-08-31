@@ -33,7 +33,8 @@ void RRT<State,StateMath,Map>::addRandomSample() {
                 if (cost < goal.cost || allow_costly_nodes) {
                     suitable_found = true;
                     newnode = graph.addNode(&candidate, nearest, cost);
-                    if (state_math.distance(&newnode->state, &goal.state) < goal_distance_threshold) {
+                    float goal_distance = state_math.distance(&newnode->state, &goal.state);
+                    if (goal_distance < goal_distance_threshold) {
                         float goal_cost = newnode->cost + map->edgeCost(&newnode->state, &goal.state);
                         if (goal_cost < goal.cost) {
                             goal.cost = goal_cost;
@@ -99,7 +100,7 @@ void RRT<State, StateMath, Map>::debugOutputSample(int i) {
                 (i < 100000 && i % 10000 == 0)
                 ) {
             renderVis();
-            map->renderVis(debug_output_prefix + "/sample_" + to_string(i) + ".png");
+            map->renderVis(debug_output_prefix + "/sample_" + to_string(i));
         }
     }
 }

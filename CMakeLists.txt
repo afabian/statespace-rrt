@@ -21,18 +21,21 @@ add_executable(main
         statespace/2d/State2D.h
         statespace/2d/State2DMath.cpp
         statespace/2d/State2DMath.h
+        statespace/2d/Map2DVis.cpp
+        statespace/2d/Map2D.cpp
+        statespace/2d/Map2D.h
         statespace/3d/State3D.cpp
         statespace/3d/State3D.h
         statespace/3d/State3DMath.cpp
         statespace/3d/State3DMath.h
+        statespace/3d/Map3DVis.cpp
+        statespace/3d/Map3D.cpp
+        statespace/3d/Map3D.h
         statespace/floater/StateFloater.cpp
         statespace/floater/StateFloater.h
         statespace/floater/StateFloaterMath.cpp
         statespace/floater/StateFloaterMath.h
-        statespace/2d/Map2D.cpp
-        statespace/2d/Map2D.h
-        statespace/3d/Map3D.cpp
-        statespace/3d/Map3D.h)
+        )
 
 target_link_libraries(main ${PNG_LIBRARY})
 

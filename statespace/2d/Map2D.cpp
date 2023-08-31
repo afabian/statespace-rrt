@@ -92,7 +92,11 @@ void Map2D::getBounds(State2D *minimums, State2D *maximums) {
 }
 
 bool Map2D::pointInObstacle(State2D *point) {
-    return pointCost(point) > 1.25f;
+    return grayscale[grayoffset(point->x, point->y)] < 0.01;
+}
+
+void Map2D::setCostScale(float scale) {
+    cost_scale = scale;
 }
 
 bool Map2D::edgeInObstacle(State2D *pointA, State2D *pointB) {
@@ -114,7 +118,7 @@ float Map2D::pointCost(State2D *point) {
         return INFINITY;
     }
     else {
-        return 2.0f - grayscale[grayoffset(x, y)];
+        return 1.0f + (cost_scale * (1.0f - grayscale[grayoffset(x, y)]));
     }
 }
 

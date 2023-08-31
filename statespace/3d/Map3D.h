@@ -28,7 +28,7 @@ public:
     void resetVis();
     void addVisPoint(State3D* point, int color);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
-    void renderVis(std::string pngfile);
+    void renderVis(std::string filename_prefix);
 
 private:
     Map3DObject border;
@@ -36,6 +36,8 @@ private:
     int object_count = 0;
 
     const float EDGE_WALK_SCALE = 1.0f;
+
+    std::string html = "";
 
 };
 

@@ -10,6 +10,8 @@ class Map2D {
 public:
     Map2D(std::string pngfile);
 
+    void setCostScale(float scale);
+
     void getBounds(State2D* minimums, State2D* maximums);
 
     bool pointInObstacle(State2D* point);
@@ -20,7 +22,7 @@ public:
     void resetVis();
     void addVisPoint(State2D* point, unsigned int color);
     void addVisLine(State2D* pointA, State2D* pointB, unsigned int color);
-    void renderVis(std::string pngfile);
+    void renderVis(std::string filename_prefix);
 
 private:
     void load_png(std::string pngfile);
@@ -35,6 +37,8 @@ private:
 
     float* grayscale = nullptr;
     const float EDGE_WALK_SCALE = 1.0f;
+
+    float cost_scale = 1;
 };
 
 
