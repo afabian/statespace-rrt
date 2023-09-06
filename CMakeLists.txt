@@ -21,6 +21,8 @@ add_executable(main
         statespace/2d/State2D.h
         statespace/2d/State2DMath.cpp
         statespace/2d/State2DMath.h
+        statespace/2d/State2DElevationMath.cpp
+        statespace/2d/State2DElevationMath.h
         statespace/2d/Map2DVis.cpp
         statespace/2d/Map2D.cpp
         statespace/2d/Map2D.h

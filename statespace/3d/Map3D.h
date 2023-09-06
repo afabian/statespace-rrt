@@ -15,6 +15,8 @@ public:
 
 class Map3D {
 
+friend class State3DMath;
+
 public:
     Map3D(std::string datafile);
 
@@ -30,12 +32,10 @@ public:
     void addVisLine(State3D* pointA, State3D* pointB, int color);
     void renderVis(std::string filename_prefix);
 
-private:
+protected:
     Map3DObject border;
     Map3DObject objects[MAP3D_MAX_OBJECTS];
     int object_count = 0;
-
-    const float EDGE_WALK_SCALE = 1.0f;
 
     std::string html = "";
 

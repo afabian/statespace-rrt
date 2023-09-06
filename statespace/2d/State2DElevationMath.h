@@ -1,14 +1,14 @@
-#ifndef STATE2DMATH_H
-#define STATE2DMATH_H
+#ifndef STATE2DELEVATIONMATH_H
+#define STATE2DELEVATIONMATH_H
 
 #include "State2D.h"
 #include "Map2D.h"
 
-class State2DMath {
-  
+class State2DElevationMath {
+
 public:
-    State2DMath();
-    State2DMath(float scale);
+    State2DElevationMath();
+    State2DElevationMath(float scale);
 
     void setMap(Map2D* _map);
     void setCostScale(float scale);
@@ -16,7 +16,7 @@ public:
     bool pointInObstacle(State2D* point);
     bool edgeInObstacle(State2D* pointA, State2D* pointB);
 
-    float pointCost(State2D* point);
+    float pointCost(State2D* point, float heading);
     float edgeCost(State2D* pointA, State2D* pointB);
 
     double distance(State2D* a, State2D* b);

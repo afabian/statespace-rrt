@@ -25,17 +25,17 @@ void RRT<State,StateMath,Map>::addRandomSample() {
 
     bool suitable_found = false;
     while (!suitable_found) {
-        candidate = state_math.getRandomState();
+        candidate = state_math->getRandomState();
         nearest = getNearestNode(&candidate);
         if (nearest != nullptr) {
-            if (!map->edgeInObstacle(&candidate, &nearest->state)) {
-                float cost = nearest->cost + map->edgeCost(&candidate, &nearest->state);
+            if (!state_math->edgeInObstacle(&candidate, &nearest->state)) {
+                float cost = nearest->cost + state_math->edgeCost(&candidate, &nearest->state);
                 if (cost < goal.cost || allow_costly_nodes) {
                     suitable_found = true;
                     newnode = graph.addNode(&candidate, nearest, cost);
-                    float goal_distance = state_math.distance(&newnode->state, &goal.state);
+                    float goal_distance = state_math->distance(&newnode->state, &goal.state);
                     if (goal_distance < goal_distance_threshold) {
-                        float goal_cost = newnode->cost + map->edgeCost(&newnode->state, &goal.state);
+                        float goal_cost = newnode->cost + state_math->edgeCost(&newnode->state, &goal.state);
                         if (goal_cost < goal.cost) {
                             goal.cost = goal_cost;
                             goal.parent = newnode;
@@ -55,7 +55,7 @@ Node<State>* RRT<State,StateMath,Map>::getNearestNode(State* state) {
     float best_distance = DBL_MAX;
     Node<State>* best_node = nullptr;
     for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
-        float distance = state_math.distance(state, &node->state);
+        float distance = state_math->distance(state, &node->state);
         if (distance < best_distance) {
             best_distance = distance;
             best_node = node;
@@ -77,7 +77,7 @@ template <class State, class StateMath, class Map>
 float RRT<State,StateMath,Map>::calc_goal_distance_threshold() {
     State minimums, maximums;
     map->getBounds(&minimums, &maximums);
-    float full_distance = state_math.distance(&minimums, &maximums);
+    float full_distance = state_math->distance(&minimums, &maximums);
     return full_distance * GOAL_THRESHOLD_PERCENT;
 }
 
@@ -85,7 +85,7 @@ template <class State, class StateMath, class Map>
 float RRT<State,StateMath,Map>::calc_neighborhood_distance_threshold() {
     State minimums, maximums;
     map->getBounds(&minimums, &maximums);
-    float full_distance = state_math.distance(&minimums, &maximums);
+    float full_distance = state_math->distance(&minimums, &maximums);
     return full_distance * rewiring_neighbor_threshold;
 }
 

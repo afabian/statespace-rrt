@@ -6,6 +6,7 @@
 class State2D {
 
 friend class State2DMath;
+friend class State2DElevationMath;
 friend class Map2D;
 
 public:

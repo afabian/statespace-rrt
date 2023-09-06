@@ -15,6 +15,7 @@ public:
     void setStartState(State* state);
     void setGoalState(State* state);
     void setMap(Map* _map);
+    void setStateMath(StateMath* _state_math);
     void configureSampling(int _passes, bool _allow_costly_nodes);
     void configureRewiring(bool _enabled, float _neighborhood_threshold_percent, int _passes);
     void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix);
@@ -37,13 +38,12 @@ private:
     void debugOutputRewire(int iteration);
 
     Map* map = nullptr;
-    
+    StateMath* state_math = nullptr;
+
     RRTGraph<State> graph;
 
     Node<State>* start = nullptr;
     Node<State> goal;
-
-    StateMath state_math;
 
     float goal_distance_threshold = 0;
     float neighborhood_distance_threshold = 0;

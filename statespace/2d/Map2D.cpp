@@ -91,46 +91,6 @@ void Map2D::getBounds(State2D *minimums, State2D *maximums) {
     maximums->set(image_width, image_height);
 }
 
-bool Map2D::pointInObstacle(State2D *point) {
-    return grayscale[grayoffset(point->x, point->y)] < 0.01;
-}
-
-void Map2D::setCostScale(float scale) {
-    cost_scale = scale;
-}
-
-bool Map2D::edgeInObstacle(State2D *pointA, State2D *pointB) {
-    State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
-    float step = EDGE_WALK_SCALE / hypotf(diff.x, diff.y);
-    for (float progress = 0; progress < 1; progress += step) {
-        State2D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
-        if (pointInObstacle(&point)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-float Map2D::pointCost(State2D *point) {
-    int x = point->x;
-    int y = point->y;
-    if (x < 0 || x >= image_width || y < 0 || y >= image_height) {
-        return INFINITY;
-    }
-    else {
-        return 1.0f + (cost_scale * (1.0f - grayscale[grayoffset(x, y)]));
-    }
-}
-
-float Map2D::edgeCost(State2D *pointA, State2D *pointB) {
-    float sum = 0;
-    State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
-    int iterations = 0;
-    float length = hypotf(diff.x, diff.y);
-    for (float progress = 0; progress < 1; progress += EDGE_WALK_SCALE / length) {
-        State2D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
-        sum += pointCost(&point);
-        iterations++;
-    }
-    return iterations == 0 ? 0 : sum / iterations * length;
+float Map2D::getGrayscalePixel(int width_pos, int height_pos) {
+    return grayscale[grayoffset(width_pos, height_pos)];
 }

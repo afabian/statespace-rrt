@@ -19,9 +19,13 @@ void RRT<State,StateMath,Map>::setGoalState(State* state) {
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::setMap(Map *_map) {
     map = _map;
-    State minimums, maximums;
-    map->getBounds(&minimums, &maximums);
-    state_math.setRandomStateConstraints(minimums, maximums);
+    if (state_math) state_math->setMap(map);
+}
+
+template<class State, class StateMath, class Map>
+void RRT<State, StateMath, Map>::setStateMath(StateMath *_state_math) {
+    state_math = _state_math;
+    if (map) state_math->setMap(map);
 }
 
 template<class State, class StateMath, class Map>

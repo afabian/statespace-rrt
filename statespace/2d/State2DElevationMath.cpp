@@ -1,34 +1,34 @@
-#include "State2DMath.h"
+#include "State2DElevationMath.h"
 #include <cmath>
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
-State2DMath::State2DMath() {
+State2DElevationMath::State2DElevationMath() {
     cost_scale = 1;
 }
 
-State2DMath::State2DMath(float scale) {
+State2DElevationMath::State2DElevationMath(float scale) {
     cost_scale = scale;
 }
 
-void State2DMath::setMap(Map2D *_map) {
+void State2DElevationMath::setMap(Map2D *_map) {
     map = _map;
     State2D _minimums, _maximums;
     map->getBounds(&_minimums, &_maximums);
     setRandomStateConstraints(_minimums, _maximums);
 }
 
-void State2DMath::setCostScale(float scale) {
+void State2DElevationMath::setCostScale(float scale) {
     cost_scale = scale;
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
 
-bool State2DMath::pointInObstacle(State2D *point) {
+bool State2DElevationMath::pointInObstacle(State2D *point) {
     return map->getGrayscalePixel(point->x, point->y) < 0.01;
 }
 
-bool State2DMath::edgeInObstacle(State2D *pointA, State2D *pointB) {
+bool State2DElevationMath::edgeInObstacle(State2D *pointA, State2D *pointB) {
     State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
     float step = EDGE_WALK_SCALE / hypotf(diff.x, diff.y);
     for (float progress = 0; progress < 1; progress += step) {
@@ -42,25 +42,30 @@ bool State2DMath::edgeInObstacle(State2D *pointA, State2D *pointB) {
 
 /////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
 
-float State2DMath::pointCost(State2D *point) {
+float State2DElevationMath::pointCost(State2D *point, float heading) {
     int x = point->x;
     int y = point->y;
-    if (x < 0 || x >= maximums.x || y < 0 || y >= maximums.y) {
+    if (x < 1 || x >= maximums.x || y < 1 || y >= maximums.y) {
         return INFINITY;
     }
     else {
-        return 1.0f + (cost_scale * (1.0f - map->getGrayscalePixel(x, y)));
+        float dx = map->getGrayscalePixel(x, y) - map->getGrayscalePixel(x-1, y);
+        float dy = map->getGrayscalePixel(x, y) - map->getGrayscalePixel(x, y-1);
+        float costx = fabsf(dx * cosf(heading));
+        float costy = fabsf(dy * sinf(heading));
+        return 1.0f + (cost_scale * (costx + costy));
     }
 }
 
-float State2DMath::edgeCost(State2D *pointA, State2D *pointB) {
+float State2DElevationMath::edgeCost(State2D *pointA, State2D *pointB) {
     float sum = 0;
     State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
     int iterations = 0;
     float length = hypotf(diff.x, diff.y);
+    float heading = atan2f(pointB->y-pointA->y, pointB->x-pointA->x);
     for (float progress = 0; progress < 1; progress += EDGE_WALK_SCALE / length) {
         State2D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
-        sum += pointCost(&point);
+        sum += pointCost(&point, heading);
         iterations++;
     }
     return iterations == 0 ? 0 : sum / iterations * length;
@@ -68,20 +73,20 @@ float State2DMath::edgeCost(State2D *pointA, State2D *pointB) {
 
 ///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////
 
-double State2DMath::distance(State2D* a, State2D* b) {
+double State2DElevationMath::distance(State2D* a, State2D* b) {
     double dx = a->x - b->x;
     double dy = a->y - b->y;
     double dist = hypot(dx, dy);
     return dist;
 }
 
-double State2DMath::approx_distance(State2D* a, State2D* b) {
+double State2DElevationMath::approx_distance(State2D* a, State2D* b) {
     return fabs(a->x - b->x) + fabs(a->y - b->y);
 }
 
 ////////////////////////////////////////// SAMPLE GENERATION /////////////////////////////////////////////
 
-void State2DMath::setRandomStateConstraints(State2D _minimums, State2D _maximums) {
+void State2DElevationMath::setRandomStateConstraints(State2D _minimums, State2D _maximums) {
     minimums = _minimums;
     maximums = _maximums;
     // scale and shift are optimized to make getRandomState() fast
@@ -91,7 +96,7 @@ void State2DMath::setRandomStateConstraints(State2D _minimums, State2D _maximums
     shift.y = -minimums.y;
 }
 
-State2D State2DMath::getRandomState() {
+State2D State2DElevationMath::getRandomState() {
     State2D output;
     output.x = (double)rand() * scale.x + shift.x;
     output.y = (double)rand() * scale.y + shift.y;

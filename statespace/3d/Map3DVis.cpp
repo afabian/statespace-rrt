@@ -24,11 +24,13 @@ void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
 }
 
 void Map3D::renderVis(std::string filename_prefix) {
+
+    // node graph
     html += "let gData = { nodes: nodes, links: links };\n";
     html += "const graph = ForceGraph3D() (document.getElementById('3d-graph')).graphData(gData);\n";
+
+    // map objects
     html += "const material_object = new THREE.MeshLambertMaterial({color: 0x888888, side: THREE.DoubleSide});\n";
-    html += "const material_border = new THREE.MeshLambertMaterial({color: 0xbb4444, side: THREE.DoubleSide});\n";
-    html += "material_border.transparent = true; material_border.opacity = 0.5;\n";
     html += "var geometry;\n";
     html += "var cube;\n";
     for (int i=0; i<object_count; i++) {
@@ -40,6 +42,10 @@ void Map3D::renderVis(std::string filename_prefix) {
         html += "cube.position.set(" + std::to_string(objects[i].bound_lower.x) + ", " + std::to_string(objects[i].bound_lower.y) + ", " + std::to_string(objects[i].bound_lower.z) + ");\n";
         html += "graph.scene().add(cube);\n";
     }
+
+    // map border
+    html += "const material_border = new THREE.MeshLambertMaterial({color: 0xbb4444, side: THREE.DoubleSide});\n";
+    html += "material_border.transparent = true; material_border.opacity = 0.5;\n";
     float dx = border.bound_upper.x - border.bound_lower.x;
     float dy = border.bound_upper.y - border.bound_lower.y;
     float dz = border.bound_upper.z - border.bound_lower.z;
@@ -47,6 +53,8 @@ void Map3D::renderVis(std::string filename_prefix) {
     html += "cube = new THREE.Mesh(geometry, material_border);\n";
     html += "cube.position.set(" + std::to_string(border.bound_lower.x) + ", " + std::to_string(border.bound_lower.y) + ", " + std::to_string(border.bound_lower.z) + ");\n";
     html += "graph.scene().add(cube);\n";
+
+    // finish html document
     html += "</script>\n";
     html += "</body>\n";
 
