@@ -53,15 +53,15 @@ void main_2d_field() {
 
 void main_2d_elevation() {
     RRT<State2D,State2DElevationMath,Map2D> rrt_2d;
-    Map2D map_2d("d:/statespace-rrt/maps/2d/field.png");
+    Map2D map_2d("d:/statespace-rrt/maps/2d/elevation.png");
     rrt_2d.setMap(&map_2d);
-    State2DElevationMath state_math_2d(100);
+    State2DElevationMath state_math_2d(1000);
     rrt_2d.setStateMath(&state_math_2d);
-    State2D start_2d{50, 950};
-    State2D goal_2d(950, 50);
+    State2D start_2d{50, 50};
+    State2D goal_2d(550, 550);
     rrt_2d.setStartState(&start_2d);
     rrt_2d.setGoalState(&goal_2d);
-    rrt_2d.configureSampling(5001, false);
+    rrt_2d.configureSampling(10001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
     rrt_2d.configureDebugOutput(true, true, "d:/statespace-rrt/output/2d/elevation/");
     rrt_2d.run();
