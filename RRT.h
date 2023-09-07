@@ -12,10 +12,9 @@ template <class State, class StateMath, class Map>
 class RRT {
 
 public:
+    RRT(Map* _map, StateMath* _state_math);
     void setStartState(State* state);
     void setGoalState(State* state);
-    void setMap(Map* _map);
-    void setStateMath(StateMath* _state_math);
     void configureSampling(int _passes, bool _allow_costly_nodes);
     void configureRewiring(bool _enabled, float _neighborhood_threshold_percent, int _passes);
     void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix);
