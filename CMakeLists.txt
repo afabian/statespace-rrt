@@ -17,6 +17,8 @@ add_executable(main
         RRT_Sampling.cpp
         RRT_Output.cpp
         RRT.h
+        Utils.cpp
+        Utils.h
         statespace/2d/State2D.cpp
         statespace/2d/State2D.h
         statespace/2d/State2DMath.cpp
