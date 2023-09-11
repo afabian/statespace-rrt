@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-#include <cstring>
+#include <string>
 #include <cerrno>
 #include <libgen.h>
 
@@ -15,7 +15,14 @@ int mkpath(const char* dir, mode_t mode) {
     if (!stat(dir, &sb))
         return 0;
 
-    mkpath(dirname(strdupa(dir)), mode);
+    char dircopy[1024] = "";
+    strcpy(dircopy, dir);
+    mkpath(dirname(dircopy), mode);
 
+#ifdef __MINGW32__
+    return mkdir(dir);
+#else
     return mkdir(dir, mode);
+#endif
+
 }

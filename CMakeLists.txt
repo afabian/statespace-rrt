@@ -47,7 +47,12 @@ add_executable(main_rrtgraphtest
         RRTGraph.cpp
         RRTGraph.h
         main_rrtgraphtest.cpp
+        statespace/2d/Map2DVis.cpp
+        statespace/2d/Map2D.cpp
+        statespace/2d/Map2D.h
         statespace/2d/State2D.cpp
         statespace/2d/State2D.h
         statespace/2d/State2DMath.cpp
         statespace/2d/State2DMath.h)
+
+target_link_libraries(main_rrtgraphtest ${PNG_LIBRARY})
