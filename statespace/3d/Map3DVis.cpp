@@ -16,7 +16,7 @@ void Map3D::resetVis() {
 }
 
 void Map3D::addVisPoint(State3D *point, int color) {
-    html += "nodes.push({id: " + std::to_string((size_t)point) + ", x:" + std::to_string(5/*point->x*/) + ", y:" + std::to_string(point->y) + ", z:" + std::to_string(point->z) + "});\n";
+    html += "nodes.push({id: " + std::to_string((size_t)point) + ", x:" + std::to_string(point->x ) + ", y:" + std::to_string(point->y) + ", z:" + std::to_string(point->z) + "});\n";
 }
 
 void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
