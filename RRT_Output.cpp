@@ -2,12 +2,14 @@
 #define RRT_OUTPUT_CPP
 
 #include "RRT.h"
+#include "Utils.h"
 
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix) {
     sampling_output_enabled = _sampling;
     rewire_output_enabled = _rewire;
     debug_output_prefix = _filename_prefix;
+    mkpath(debug_output_prefix.c_str(), S_IRWXU);
 }
 
 template<class State, class StateMath, class Map>
