@@ -31,6 +31,7 @@ public:
     void addVisPoint(State3D* point, int color);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
     void renderVis(std::string filename_prefix);
+    void renderFinalVis(std::string filename_prefix);
 
 protected:
     Map3DObject border;

@@ -1,6 +1,9 @@
 #include <cmath>
 #include <cstdint>
+#include <libgen.h>
 #include "Map2D.h"
+#include <iostream>
+#include <fstream>
 
 void Map2D::resetVis() {
     for (int height_pos = 0; height_pos < image_height; height_pos++) {
@@ -78,4 +81,27 @@ void Map2D::write_png(std::string filename_prefix) {
     fclose(fp);
 
     png_destroy_write_struct(&png, &info);
+
+    add_image_to_list(filename_prefix);
+}
+
+void Map2D::add_image_to_list(std::string filename_prefix) {
+    std::string base_filename = filename_prefix.substr(filename_prefix.find_last_of("/\\") + 1) + ".png";
+    filelist += "file '" + base_filename + "'\n";
+    bool is_sample = base_filename.find("sample") != std::string::npos;
+    float duration = is_sample ? 0.5 : 1.0;
+    filelist += "duration " + std::to_string(duration) + "\n";
+}
+
+void Map2D::renderFinalVis(std::string filename_prefix) {
+    write_video(filename_prefix);
+}
+
+void Map2D::write_video(std::string filename_prefix) {
+    std::ofstream outfile(filename_prefix + ".txt");
+    outfile << filelist;
+    outfile.close();
+
+    std::string cmd = "ffmpeg -f concat -i " + filename_prefix + ".txt -vf format=yuv420p -movflags +faststart " + filename_prefix + ".mp4";
+    system(cmd.c_str());
 }

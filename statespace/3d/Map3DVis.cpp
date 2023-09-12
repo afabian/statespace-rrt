@@ -67,3 +67,7 @@ void Map3D::getBounds(State3D *minimums, State3D *maximums) {
     *minimums = border.bound_lower;
     *maximums = border.bound_upper;
 }
+
+void Map3D::renderFinalVis(std::string filename_prefix) {
+
+}

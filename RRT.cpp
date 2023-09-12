@@ -40,6 +40,7 @@ void RRT<State, StateMath, Map>::run() {
         }
     }
 
+    map->renderFinalVis(debug_output_prefix + "/video");
 }
 
 #endif
