@@ -2,6 +2,9 @@
 #include <cstdio>
 #include <cmath>
 #include <cstdint>
+#include <sstream>
+#include <ios>
+#include <iomanip>
 
 void Map3D::resetVis() {
     html = R"(
@@ -30,11 +33,15 @@ void Map3D::resetVis() {
 }
 
 void Map3D::addVisPoint(State3D *point, int color) {
-    html += "nodes.push({id: " + std::to_string((size_t)point) + ", x:" + std::to_string(point->x ) + ", y:" + std::to_string(point->y) + ", z:" + std::to_string(point->z) + "});\n";
+    std::stringstream colorstream;
+    colorstream << "0x" << std::setfill('0') << std::setw(6) << std::hex << color;
+    html += "nodes.push({id: " + std::to_string((size_t)point) + ", x:" + std::to_string(point->x ) + ", y:" + std::to_string(point->y) + ", z:" + std::to_string(point->z) + ", color:" + colorstream.str() + "});\n";
 }
 
 void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
-    html += "edges.push({source: " + std::to_string((size_t)pointA) + ", target: " + std::to_string((size_t)pointB) + "});\n";
+    std::stringstream colorstream;
+    colorstream << "0x" << std::setfill('0') << std::setw(6) << std::hex << color;
+    html += "edges.push({source: " + std::to_string((size_t)pointA) + ", target: " + std::to_string((size_t)pointB) + ", color:" + colorstream.str() + "});\n";
 }
 
 void Map3D::renderVis(std::string filename_prefix) {

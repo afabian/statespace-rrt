@@ -78,7 +78,7 @@ float RRT<State,StateMath,Map>::calc_goal_distance_threshold() {
     State minimums, maximums;
     map->getBounds(&minimums, &maximums);
     float full_distance = state_math->distance(&minimums, &maximums);
-    return full_distance * GOAL_THRESHOLD_PERCENT;
+    return full_distance * goal_threshold_percent;
 }
 
 template <class State, class StateMath, class Map>

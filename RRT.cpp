@@ -17,10 +17,11 @@ void RRT<State,StateMath,Map>::setStartState(State* state) {
 }
 
 template <class State, class StateMath, class Map>
-void RRT<State,StateMath,Map>::setGoalState(State* state) {
+void RRT<State,StateMath,Map>::setGoalState(State* state, float _goal_threshold_percent) {
     goal.state = *state;
     goal.cost = INFINITY;
     goal.parent = nullptr;
+    goal_threshold_percent = _goal_threshold_percent;
 }
 
 template<class State, class StateMath, class Map>

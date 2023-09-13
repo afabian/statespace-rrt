@@ -5,8 +5,8 @@
 #include <string>
 #include <cmath>
 
-const float GOAL_THRESHOLD_PERCENT = 0.01f;
-const float NEIGHBORHOOD_THRESHOLD_PERCENT_DEFAULT = 0.05f;
+const float GOAL_THRESHOLD_PERCENT_DEFAULT = 0.01f;
+const float NEIGHBORHOOD_THRESHOLD_PERCENT_DEFAULT = 0.01f;
 
 template <class State, class StateMath, class Map>
 class RRT {
@@ -14,7 +14,7 @@ class RRT {
 public:
     RRT(Map* _map, StateMath* _state_math);
     void setStartState(State* state);
-    void setGoalState(State* state);
+    void setGoalState(State* state, float _goal_threshold_percent);
     void configureSampling(int _passes, bool _allow_costly_nodes);
     void configureRewiring(bool _enabled, float _neighborhood_threshold_percent, int _passes);
     void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix);
@@ -54,6 +54,8 @@ private:
     bool rewiring_enabled = false;
     float rewiring_neighbor_threshold = NEIGHBORHOOD_THRESHOLD_PERCENT_DEFAULT;
     int rewiring_passes = 1;
+
+    float goal_threshold_percent = GOAL_THRESHOLD_PERCENT_DEFAULT;
 
     bool sampling_output_enabled = false;
     bool rewire_output_enabled = false;

@@ -24,7 +24,7 @@ void main_2d_walls() {
     State2D start_2d{10*5, 215*5};
     State2D goal_2d(275*5, 15*5);
     rrt_2d.setStartState(&start_2d);
-    rrt_2d.setGoalState(&goal_2d);
+    rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(5001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
     rrt_2d.configureDebugOutput(true, true, "output/2d/walls/");
@@ -39,7 +39,7 @@ void main_2d_field() {
     State2D start_2d{50, 950};
     State2D goal_2d(950, 50);
     rrt_2d.setStartState(&start_2d);
-    rrt_2d.setGoalState(&goal_2d);
+    rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(5001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
     rrt_2d.configureDebugOutput(true, true, "output/2d/field/");
@@ -54,7 +54,7 @@ void main_2d_elevation() {
     State2D start_2d{50, 50};
     State2D goal_2d(550, 550);
     rrt_2d.setStartState(&start_2d);
-    rrt_2d.setGoalState(&goal_2d);
+    rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(10001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
     rrt_2d.configureDebugOutput(true, true, "output/2d/elevation/");
@@ -69,9 +69,9 @@ void main_3d() {
     State3D start_3d{5, 5, 5};
     State3D goal_3d(95, 95, 95);
     rrt_3d.setStartState(&start_3d);
-    rrt_3d.setGoalState(&goal_3d);
-    rrt_3d.configureSampling(5001, true);
-    rrt_3d.configureRewiring(false, 0.05, 10);
+    rrt_3d.setGoalState(&goal_3d, 0.05);
+    rrt_3d.configureSampling(2001, true);
+    rrt_3d.configureRewiring(true, 0.25, 10);
     rrt_3d.configureDebugOutput(true, true, "output/3d/");
     rrt_3d.run();
     cout << "3D: Final path cost: " << rrt_3d.getGoalCost() << endl;
