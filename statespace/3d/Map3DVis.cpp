@@ -4,15 +4,29 @@
 #include <cstdint>
 
 void Map3D::resetVis() {
-    html = "";
-    html += "<head>";
-    html += "<style>body { margin: 0; } </style>";
-    html += "<script src=\"../res/three.js\"></script>";
-    html += "<script src=\"../res/3d-force-graph.js\"></script>";
-    html += "</head>\n";
-    html += "<body><div id=\"3d-graph\"></div>\n";
-    html += "<script>\n";
-    html += "let nodes = []; let links = [];\n";
+    html = R"(
+<head>
+    <style>
+    body { margin: 0; }
+    </style>
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.156.1/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="../res/3d-simple.js"></script>
+</head>
+<body>
+    <div id="3d-graph"></div>
+    <script>
+    let nodes = [];
+    let edges = [];
+    )";
 }
 
 void Map3D::addVisPoint(State3D *point, int color) {
@@ -20,39 +34,25 @@ void Map3D::addVisPoint(State3D *point, int color) {
 }
 
 void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
-    html += "links.push({source: " + std::to_string((size_t)pointA) + ", target: " + std::to_string((size_t)pointB) + "});\n";
+    html += "edges.push({source: " + std::to_string((size_t)pointA) + ", target: " + std::to_string((size_t)pointB) + "});\n";
 }
 
 void Map3D::renderVis(std::string filename_prefix) {
 
-    // node graph
-    html += "let gData = { nodes: nodes, links: links };\n";
-    html += "const graph = ForceGraph3D() (document.getElementById('3d-graph')).graphData(gData);\n";
-
     // map objects
-    html += "const material_object = new THREE.MeshLambertMaterial({color: 0x888888, side: THREE.DoubleSide});\n";
-    html += "var geometry;\n";
-    html += "var cube;\n";
+    html += "let obstacles = [];\n";
     for (int i=0; i<object_count; i++) {
         float dx = objects[i].bound_upper.x - objects[i].bound_lower.x;
         float dy = objects[i].bound_upper.y - objects[i].bound_lower.y;
         float dz = objects[i].bound_upper.z - objects[i].bound_lower.z;
-        html += "geometry = new THREE.BoxGeometry(" + std::to_string(dx) + ", " + std::to_string(dy) + ", " + std::to_string(dz) + ");\n";
-        html += "cube = new THREE.Mesh(geometry, material_object);\n";
-        html += "cube.position.set(" + std::to_string(objects[i].bound_lower.x) + ", " + std::to_string(objects[i].bound_lower.y) + ", " + std::to_string(objects[i].bound_lower.z) + ");\n";
-        html += "graph.scene().add(cube);\n";
+        html += "obstacles.push({origin:[" + std::to_string(objects[i].bound_lower.x) + ", " + std::to_string(objects[i].bound_lower.y) + ", " + std::to_string(objects[i].bound_lower.z) + "], size:[" + std::to_string(dx) + "," + std::to_string(dy) + "," + std::to_string(dz) + "]});\n";
     }
 
     // map border
-    html += "const material_border = new THREE.MeshLambertMaterial({color: 0xbb4444, side: THREE.DoubleSide});\n";
-    html += "material_border.transparent = true; material_border.opacity = 0.5;\n";
     float dx = border.bound_upper.x - border.bound_lower.x;
     float dy = border.bound_upper.y - border.bound_lower.y;
     float dz = border.bound_upper.z - border.bound_lower.z;
-    html += "geometry = new THREE.BoxGeometry(" + std::to_string(dx) + ", " + std::to_string(dy) + ", " + std::to_string(dz) + ");\n";
-    html += "cube = new THREE.Mesh(geometry, material_border);\n";
-    html += "cube.position.set(" + std::to_string(border.bound_lower.x) + ", " + std::to_string(border.bound_lower.y) + ", " + std::to_string(border.bound_lower.z) + ");\n";
-    html += "graph.scene().add(cube);\n";
+    html += "let border = {origin:["+ std::to_string(border.bound_lower.x) + ", " + std::to_string(border.bound_lower.y) + ", " + std::to_string(border.bound_lower.z) +"], size:[" + std::to_string(dx) + ", " + std::to_string(dy) + ", " + std::to_string(dz) + "]}\n";
 
     // finish html document
     html += "</script>\n";

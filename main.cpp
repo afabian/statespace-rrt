@@ -70,7 +70,7 @@ void main_3d() {
     State3D goal_3d(95, 95, 95);
     rrt_3d.setStartState(&start_3d);
     rrt_3d.setGoalState(&goal_3d);
-    rrt_3d.configureSampling(1001, false);
+    rrt_3d.configureSampling(5001, true);
     rrt_3d.configureRewiring(false, 0.05, 10);
     rrt_3d.configureDebugOutput(true, true, "output/3d/");
     rrt_3d.run();

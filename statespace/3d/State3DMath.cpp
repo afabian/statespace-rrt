@@ -29,7 +29,7 @@ bool State3DMath::pointInObstacle(State3D *point) {
         bool x_inside = point->x > map->objects[i].bound_lower.x && point->x < map->objects[i].bound_upper.x;
         bool y_inside = point->y > map->objects[i].bound_lower.y && point->y < map->objects[i].bound_upper.y;
         bool z_inside = point->z > map->objects[i].bound_lower.z && point->z < map->objects[i].bound_upper.z;
-        if (x_inside || y_inside || z_inside) {
+        if (x_inside && y_inside && z_inside) {
             return true;
         }
     }
