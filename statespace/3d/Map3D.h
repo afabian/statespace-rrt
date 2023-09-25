@@ -31,9 +31,11 @@ public:
     void addVisPoint(State3D* point, int color);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
     void renderVis(std::string filename_prefix);
+    void takeScreenshot(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
 
 protected:
+    std::string ReplaceString(std::string subject, const std::string& search, const std::string& replace);
     Map3DObject border;
     Map3DObject objects[MAP3D_MAX_OBJECTS];
     int object_count = 0;

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ios>
 #include <iomanip>
+#include <iostream>
 
 void Map3D::resetVis() {
     html = R"(
@@ -68,6 +69,18 @@ void Map3D::renderVis(std::string filename_prefix) {
     FILE* fp = fopen((filename_prefix + ".html").c_str(), "w");
     fputs(html.c_str(), fp);
     fclose(fp);
+
+    // take screenshot of rendered scene
+    takeScreenshot(filename_prefix);
+}
+
+void Map3D::takeScreenshot(std::string filename_prefix) {
+    std::string url = "file://d:/statespace-rrt/" + filename_prefix + ".html";
+    std::string sspath = "d:/statespace-rrt/" + filename_prefix + ".png";
+    sspath = ReplaceString(sspath, "/", "\\");
+    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1000,1000 " + url;
+    std::cout << cmd << std::endl;
+    system(cmd.c_str());
 }
 
 void Map3D::getBounds(State3D *minimums, State3D *maximums) {
@@ -77,4 +90,14 @@ void Map3D::getBounds(State3D *minimums, State3D *maximums) {
 
 void Map3D::renderFinalVis(std::string filename_prefix) {
 
+}
+
+std::string Map3D::ReplaceString(std::string subject, const std::string& search,
+                          const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+        subject.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
+    return subject;
 }
