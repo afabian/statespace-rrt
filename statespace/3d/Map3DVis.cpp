@@ -6,6 +6,7 @@
 #include <ios>
 #include <iomanip>
 #include <iostream>
+#include <fstream>
 
 void Map3D::resetVis() {
     html = R"(
@@ -75,12 +76,27 @@ void Map3D::renderVis(std::string filename_prefix) {
 }
 
 void Map3D::takeScreenshot(std::string filename_prefix) {
+    // Firefox needs to have CORS disabled for local files:
+    // Navigate to about:config -> security.fileuri.strict_origin_policy -> False
+
     std::string url = "file://d:/statespace-rrt/" + filename_prefix + ".html";
+    url = ReplaceString(url, "//", "/");
     std::string sspath = "d:/statespace-rrt/" + filename_prefix + ".png";
     sspath = ReplaceString(sspath, "/", "\\");
     std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1000,1000 " + url;
     std::cout << cmd << std::endl;
     system(cmd.c_str());
+
+    add_image_to_list(filename_prefix);
+    last_screenshot_filename_prefix = filename_prefix;
+}
+
+void Map3D::add_image_to_list(std::string filename_prefix) {
+    std::string base_filename = filename_prefix.substr(filename_prefix.find_last_of("/\\") + 1) + ".png";
+    filelist += "file '" + base_filename + "'\n";
+    bool is_sample = base_filename.find("sample") != std::string::npos;
+    float duration = is_sample ? 0.5 : 1.0;
+    filelist += "duration " + std::to_string(duration) + "\n";
 }
 
 void Map3D::getBounds(State3D *minimums, State3D *maximums) {
@@ -89,7 +105,21 @@ void Map3D::getBounds(State3D *minimums, State3D *maximums) {
 }
 
 void Map3D::renderFinalVis(std::string filename_prefix) {
+    // retrigger the last screenshot, because firefox runs asynchronously and giving it a new command
+    // forces us to block until the last one finishes, meaning the last screenshot will actually be written
+    // to disk so that we can use it in our video.
+    takeScreenshot(last_screenshot_filename_prefix);
 
+    write_video(filename_prefix);
+}
+
+void Map3D::write_video(std::string filename_prefix) {
+    std::ofstream outfile(filename_prefix + ".txt");
+    outfile << filelist;
+    outfile.close();
+
+    std::string cmd = "ffmpeg -f concat -i " + filename_prefix + ".txt -vf format=yuv420p -movflags +faststart " + filename_prefix + ".mp4";
+    system(cmd.c_str());
 }
 
 std::string Map3D::ReplaceString(std::string subject, const std::string& search,

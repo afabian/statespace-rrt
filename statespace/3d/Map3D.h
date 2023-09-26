@@ -35,12 +35,18 @@ public:
     void renderFinalVis(std::string filename_prefix);
 
 protected:
+    void write_video(std::string filename_prefix);
     std::string ReplaceString(std::string subject, const std::string& search, const std::string& replace);
+    void add_image_to_list(std::string filename_prefix);
+
     Map3DObject border;
     Map3DObject objects[MAP3D_MAX_OBJECTS];
     int object_count = 0;
 
     std::string html = "";
+
+    std::string filelist = "";
+    std::string last_screenshot_filename_prefix = "";
 
 };
 
