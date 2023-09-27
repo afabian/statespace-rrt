@@ -9,10 +9,11 @@ function d3_simple_setup() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-    window.camera.position.set(-100, 50, -50);
+    window.camera.position.set(-62, 21, 50);
     window.camera.lookAt(new THREE.Vector3(50, 50, 50));
 
     window.controls = new OrbitControls(camera, renderer.domElement);
+    window.controls.target = new THREE.Vector3(50, 50, 50);
 }
 
 function d3_simple_world() {
@@ -52,7 +53,7 @@ function d3_simple_edges() {
         points.push(new THREE.Vector3(pointA.x, pointA.y, pointA.z));
         points.push(new THREE.Vector3(pointB.x, pointB.y, pointB.z));
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const material = new THREE.LineBasicMaterial( { color: edge.color, transparent: true, opacity: 0.2 } );
+        const material = new THREE.LineBasicMaterial( { color: edge.color, transparent: true, opacity: 0.5 } );
         const line = new THREE.Line(geometry, material);
         window.scene.add(line);
     }

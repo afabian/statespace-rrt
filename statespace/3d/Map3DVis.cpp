@@ -87,7 +87,7 @@ void Map3D::takeScreenshot(std::string filename_prefix) {
     url = ReplaceString(url, "//", "/");
     std::string sspath = (std::string)cwd + "/" + filename_prefix + ".png";
     sspath = ReplaceString(sspath, "/", "\\");
-    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1000,1000 " + url;
+    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1920,1080 " + url;
     std::cout << cmd << std::endl;
     system(cmd.c_str());
 

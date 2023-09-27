@@ -62,6 +62,8 @@ void main_2d_elevation() {
     cout << "2D Elevation: Final path cost: " << rrt_2d.getGoalCost() << endl;
 }
 
+// TODO: Configurable vis resolution for 2d and 3d vis
+
 void main_3d() {
     Map3D map_3d("maps/3d/test1.txt");
     State3DMath state_math_3d(1);
