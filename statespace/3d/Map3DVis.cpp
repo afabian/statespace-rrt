@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 void Map3D::resetVis() {
     html = R"(
@@ -79,9 +80,12 @@ void Map3D::takeScreenshot(std::string filename_prefix) {
     // Firefox needs to have CORS disabled for local files:
     // Navigate to about:config -> security.fileuri.strict_origin_policy -> False
 
-    std::string url = filename_prefix + ".html";
+    char cwd[1024] = {0};
+    getcwd(cwd, sizeof(cwd));
+    std::string url = "file:/" + (std::string)cwd + "/" + filename_prefix + ".html";
+    url = ReplaceString(url, "\\", "/");
     url = ReplaceString(url, "//", "/");
-    std::string sspath = filename_prefix + ".png";
+    std::string sspath = (std::string)cwd + "/" + filename_prefix + ".png";
     sspath = ReplaceString(sspath, "/", "\\");
     std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1000,1000 " + url;
     std::cout << cmd << std::endl;
