@@ -79,9 +79,9 @@ void Map3D::takeScreenshot(std::string filename_prefix) {
     // Firefox needs to have CORS disabled for local files:
     // Navigate to about:config -> security.fileuri.strict_origin_policy -> False
 
-    std::string url = "file://d:/statespace-rrt/" + filename_prefix + ".html";
+    std::string url = filename_prefix + ".html";
     url = ReplaceString(url, "//", "/");
-    std::string sspath = "d:/statespace-rrt/" + filename_prefix + ".png";
+    std::string sspath = filename_prefix + ".png";
     sspath = ReplaceString(sspath, "/", "\\");
     std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1000,1000 " + url;
     std::cout << cmd << std::endl;
