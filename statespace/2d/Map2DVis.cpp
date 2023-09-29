@@ -5,6 +5,11 @@
 #include <iostream>
 #include <fstream>
 
+
+void Map2D::configureVis(int width, int height) {
+    // Map2D doesn't have a configurable output size
+}
+
 void Map2D::resetVis() {
     for (int height_pos = 0; height_pos < image_height; height_pos++) {
         png_bytep row = vis_rows[height_pos];
@@ -102,6 +107,6 @@ void Map2D::write_video(std::string filename_prefix) {
     outfile << filelist;
     outfile.close();
 
-    std::string cmd = "ffmpeg -f concat -i " + filename_prefix + ".txt -vf format=yuv420p -movflags +faststart " + filename_prefix + ".mp4";
+    std::string cmd = "ffmpeg -y -f concat -i " + filename_prefix + ".txt -vf format=yuv420p -movflags +faststart " + filename_prefix + ".mp4";
     system(cmd.c_str());
 }

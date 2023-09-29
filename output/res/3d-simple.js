@@ -9,7 +9,7 @@ function d3_simple_setup() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-    window.camera.position.set(-62, 21, 50);
+    window.camera.position.set(-60, 21, -30 + frames);
     window.camera.lookAt(new THREE.Vector3(50, 50, 50));
 
     window.controls = new OrbitControls(camera, renderer.domElement);

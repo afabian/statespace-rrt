@@ -9,6 +9,11 @@
 #include <fstream>
 #include <unistd.h>
 
+void Map3D::configureVis(int width, int height) {
+    vis_width = width;
+    vis_height = height;
+}
+
 void Map3D::resetVis() {
     html = R"(
 <head>
@@ -62,7 +67,10 @@ void Map3D::renderVis(std::string filename_prefix) {
     float dx = border.bound_upper.x - border.bound_lower.x;
     float dy = border.bound_upper.y - border.bound_lower.y;
     float dz = border.bound_upper.z - border.bound_lower.z;
-    html += "let border = {origin:["+ std::to_string(border.bound_lower.x) + ", " + std::to_string(border.bound_lower.y) + ", " + std::to_string(border.bound_lower.z) +"], size:[" + std::to_string(dx) + ", " + std::to_string(dy) + ", " + std::to_string(dz) + "]}\n";
+    html += "let border = {origin:["+ std::to_string(border.bound_lower.x) + ", " + std::to_string(border.bound_lower.y) + ", " + std::to_string(border.bound_lower.z) +"], size:[" + std::to_string(dx) + ", " + std::to_string(dy) + ", " + std::to_string(dz) + "]};\n";
+
+    // frame counter
+    html += "let frames = " + std::to_string(frames++) + ";\n";
 
     // finish html document
     html += "</script>\n";
@@ -87,7 +95,7 @@ void Map3D::takeScreenshot(std::string filename_prefix) {
     url = ReplaceString(url, "//", "/");
     std::string sspath = (std::string)cwd + "/" + filename_prefix + ".png";
     sspath = ReplaceString(sspath, "/", "\\");
-    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=1920,1080 " + url;
+    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=" + std::to_string(vis_width) + "," + std::to_string(vis_height) + " " + url;
     std::cout << cmd << std::endl;
     system(cmd.c_str());
 

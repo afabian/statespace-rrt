@@ -27,7 +27,7 @@ void main_2d_walls() {
     rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(5001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
-    rrt_2d.configureDebugOutput(true, true, "output/2d/walls/");
+    rrt_2d.configureDebugOutput(true, true, "output/2d/walls/", 0, 0);
     rrt_2d.run();
     cout << "2d Walls: Final path cost: " << rrt_2d.getGoalCost() << endl;
 }
@@ -42,7 +42,7 @@ void main_2d_field() {
     rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(5001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
-    rrt_2d.configureDebugOutput(true, true, "output/2d/field/");
+    rrt_2d.configureDebugOutput(true, true, "output/2d/field/", 0, 0);
     rrt_2d.run();
     cout << "2D Field: Final path cost: " << rrt_2d.getGoalCost() << endl;
 }
@@ -57,12 +57,10 @@ void main_2d_elevation() {
     rrt_2d.setGoalState(&goal_2d, 0.01);
     rrt_2d.configureSampling(10001, false);
     rrt_2d.configureRewiring(true, 0.05, 10);
-    rrt_2d.configureDebugOutput(true, true, "output/2d/elevation/");
+    rrt_2d.configureDebugOutput(true, true, "output/2d/elevation/", 0, 0);
     rrt_2d.run();
     cout << "2D Elevation: Final path cost: " << rrt_2d.getGoalCost() << endl;
 }
-
-// TODO: Configurable vis resolution for 2d and 3d vis
 
 void main_3d() {
     Map3D map_3d("maps/3d/test1.txt");
@@ -74,7 +72,7 @@ void main_3d() {
     rrt_3d.setGoalState(&goal_3d, 0.05);
     rrt_3d.configureSampling(2001, true);
     rrt_3d.configureRewiring(true, 0.25, 10);
-    rrt_3d.configureDebugOutput(true, true, "output/3d/");
+    rrt_3d.configureDebugOutput(true, true, "output/3d/", 1920, 1080);
     rrt_3d.run();
     cout << "3D: Final path cost: " << rrt_3d.getGoalCost() << endl;
 }

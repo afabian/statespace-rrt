@@ -17,7 +17,7 @@ public:
     void setGoalState(State* state, float _goal_threshold_percent);
     void configureSampling(int _passes, bool _allow_costly_nodes);
     void configureRewiring(bool _enabled, float _neighborhood_threshold_percent, int _passes);
-    void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix);
+    void configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix, int width, int height);
     void run();
     void initRandomSamples();
     void addRandomSample();

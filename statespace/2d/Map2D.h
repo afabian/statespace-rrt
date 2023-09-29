@@ -10,6 +10,7 @@ class Map2D {
 public:
     Map2D(std::string pngfile);
     void getBounds(State2D* minimums, State2D* maximums);
+    void configureVis(int width, int height);
     void resetVis();
     void addVisPoint(State2D* point, unsigned int color);
     void addVisLine(State2D* pointA, State2D* pointB, unsigned int color);
@@ -32,6 +33,7 @@ private:
 
     float* grayscale = nullptr;
     std::string filelist = "";
+
 };
 
 

@@ -5,10 +5,11 @@
 #include "Utils.h"
 
 template<class State, class StateMath, class Map>
-void RRT<State, StateMath, Map>::configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix) {
+void RRT<State, StateMath, Map>::configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix, int width, int height) {
     sampling_output_enabled = _sampling;
     rewire_output_enabled = _rewire;
     debug_output_prefix = _filename_prefix;
+    map->configureVis(width, height);
     mkpath(debug_output_prefix.c_str(), S_IRWXU);
 }
 

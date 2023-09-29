@@ -27,6 +27,7 @@ public:
     float pointCost(State3D* point);
     float edgeCost(State3D* pointA, State3D* pointB);
 
+    void configureVis(int width, int height);
     void resetVis();
     void addVisPoint(State3D* point, int color);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
@@ -47,6 +48,11 @@ protected:
 
     std::string filelist = "";
     std::string last_screenshot_filename_prefix = "";
+
+    int vis_width = 640;
+    int vis_height = 480;
+
+    int frames = 0;
 
 };
 
