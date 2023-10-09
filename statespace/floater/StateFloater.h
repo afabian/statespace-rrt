@@ -16,6 +16,7 @@ public:
     void set(StateFloater* source);
     void set(double _t, double _y, double _vy);
     std::string toString();
+    bool operator==(const StateFloater &other);
 
 protected:
     double t;

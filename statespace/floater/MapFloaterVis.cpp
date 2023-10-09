@@ -1,16 +1,16 @@
 #include <cmath>
 #include <cstdint>
 #include <libgen.h>
-#include "Map2D.h"
+#include "MapFloater.h"
 #include <iostream>
 #include <fstream>
 
 
-void Map2D::configureVis(int width, int height) {
-    // Map2D doesn't have a configurable output size
+void MapFloater::configureVis(int width, int height) {
+    // MapFloater doesn't have a configurable output size
 }
 
-void Map2D::resetVis() {
+void MapFloater::resetVis() {
     for (int height_pos = 0; height_pos < image_height; height_pos++) {
         png_bytep row = vis_rows[height_pos];
         for (int width_pos = 0; width_pos < image_width; width_pos++) {
@@ -23,29 +23,29 @@ void Map2D::resetVis() {
     }
 }
 
-void Map2D::addVisPoint(State2D *point, unsigned int color) {
+void MapFloater::addVisPoint(StateFloater *point, unsigned int color) {
     png_bytep row = vis_rows[(int)point->y];
-    row[(int)point->x * 4 + 0] = (color >> 0) & 0x000000ff;
-    row[(int)point->x * 4 + 1] = (color >> 8) & 0x000000ff;
-    row[(int)point->x * 4 + 2] = (color >> 16) & 0x000000ff;
-    row[(int)point->x * 4 + 3] = 255;
+    row[(int)point->t * 4 + 0] = (color >> 0) & 0x000000ff;
+    row[(int)point->t * 4 + 1] = (color >> 8) & 0x000000ff;
+    row[(int)point->t * 4 + 2] = (color >> 16) & 0x000000ff;
+    row[(int)point->t * 4 + 3] = 255;
 }
 
-void Map2D::addVisLine(State2D *pointA, State2D *pointB, unsigned int color) {
+void MapFloater::addVisLine(StateFloater *pointA, StateFloater *pointB, unsigned int color) {
     if (pointA == pointB) return;
-    State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
-    float step = 1.0f / hypotf(diff.x, diff.y);
+    StateFloater diff(pointB->t - pointA->t, pointB->y - pointA->y, 0);
+    float step = 1.0f / hypotf(diff.t, diff.y);
     for (float progress = 0; progress < 1; progress += step) {
-        State2D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
+        StateFloater point(pointA->t + diff.t * progress, pointA->y + diff.y * progress, 0);
         addVisPoint(&point, color);
     }
 }
 
-void Map2D::renderVis(std::string pngfile) {
+void MapFloater::renderVis(std::string pngfile) {
     write_png(pngfile);
 }
 
-void Map2D::write_png(std::string filename_prefix) {
+void MapFloater::write_png(std::string filename_prefix) {
     int y;
 
     FILE *fp = fopen((filename_prefix + ".png").c_str(), "wb");
@@ -86,7 +86,7 @@ void Map2D::write_png(std::string filename_prefix) {
     add_image_to_list(filename_prefix);
 }
 
-void Map2D::add_image_to_list(std::string filename_prefix) {
+void MapFloater::add_image_to_list(std::string filename_prefix) {
     std::string base_filename = filename_prefix.substr(filename_prefix.find_last_of("/\\") + 1) + ".png";
     filelist += "file '" + base_filename + "'\n";
     bool is_sample = base_filename.find("sample") != std::string::npos;
@@ -94,11 +94,11 @@ void Map2D::add_image_to_list(std::string filename_prefix) {
     filelist += "duration " + std::to_string(duration) + "\n";
 }
 
-void Map2D::renderFinalVis(std::string filename_prefix) {
+void MapFloater::renderFinalVis(std::string filename_prefix) {
     write_video(filename_prefix);
 }
 
-void Map2D::write_video(std::string filename_prefix) {
+void MapFloater::write_video(std::string filename_prefix) {
     std::ofstream outfile(filename_prefix + ".txt");
     outfile << filelist;
     outfile.close();

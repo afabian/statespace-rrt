@@ -1,21 +1,61 @@
 #include "StateFloaterMath.h"
 #include <cmath>
 
-// "Floater" is a sample system, with a hypothetical vehicle that moves forward
-// at a constant rate (so we could say it's position x equals time t), but
-// is free to move vertically.  In the vertical (y) axis, it has gravity and inertia,
-// and can command update thrust between 0% and 100% of some maximum value.
-//
-// Maps are developed with obstacles in x-y space, so that the vehicle must
-// time its thrust commands to avoid the obstacle.
+///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
-double StateFloaterMath::distance(StateFloater* a, StateFloater* b) {
+StateFloaterMath::StateFloaterMath() {
+}
+
+void StateFloaterMath::setMap(MapFloater *_map) {
+    map = _map;
+    StateFloater _minimums, _maximums;
+    map->getBounds(&_minimums, &_maximums);
+    setRandomStateConstraints(_minimums, _maximums);
+}
+
+////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
+
+bool StateFloaterMath::pointInObstacle(StateFloater *point) {
+    return map->getGrayscalePixel(point->t, point->y) < 0.01;
+}
+
+bool StateFloaterMath::edgeInObstacle(StateFloater *pointA, StateFloater *pointB) {
+    StateFloater diff(pointB->t - pointA->t, pointB->y - pointA->y, 0);
+    float step = EDGE_WALK_SCALE / hypotf(diff.t, diff.y);
+    for (float progress = 0; progress < 1; progress += step) {
+        StateFloater point(pointA->t + diff.t * progress, pointA->y + diff.y * progress, 0);
+        if (pointInObstacle(&point)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
+
+float StateFloaterMath::pointCost(StateFloater *point) {
+    return 0;
+}
+
+float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
+    return 0;
+}
+
+///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////
+
+double StateFloaterMath::distance(StateFloater *a, StateFloater *b) {
     double dt = a->t - b->t;
     double dy = a->y - b->y;
     double dvy = a->vy - b->vy;
     double dist = sqrt(dt*dt + dy*dy + dvy*dvy);
     return dist;
 }
+
+double StateFloaterMath::approx_distance(StateFloater *a, StateFloater *b) {
+    return 0;
+}
+
+////////////////////////////////////////// SAMPLE GENERATION /////////////////////////////////////////////
 
 void StateFloaterMath::setRandomStateConstraints(StateFloater _minimums, StateFloater _maximums) {
     minimums = _minimums;

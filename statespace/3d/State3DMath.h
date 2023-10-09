@@ -11,7 +11,7 @@ public:
     State3DMath(float scale);
 
     void setMap(Map3D* _map);
-    void setCostScale(float scale);
+    void setCostScale(float _scale);
 
     bool pointInObstacle(State3D* point);
     bool edgeInObstacle(State3D* pointA, State3D* pointB);

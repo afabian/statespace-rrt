@@ -18,8 +18,8 @@ void State2DMath::setMap(Map2D *_map) {
     setRandomStateConstraints(_minimums, _maximums);
 }
 
-void State2DMath::setCostScale(float scale) {
-    cost_scale = scale;
+void State2DMath::setCostScale(float _scale) {
+    cost_scale = _scale;
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////

@@ -11,7 +11,7 @@ public:
     State2DMath(float scale);
 
     void setMap(Map2D* _map);
-    void setCostScale(float scale);
+    void setCostScale(float _scale);
 
     bool pointInObstacle(State2D* point);
     bool edgeInObstacle(State2D* pointA, State2D* pointB);

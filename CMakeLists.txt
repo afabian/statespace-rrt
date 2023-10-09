@@ -39,7 +39,10 @@ add_executable(main
         statespace/floater/StateFloater.h
         statespace/floater/StateFloaterMath.cpp
         statespace/floater/StateFloaterMath.h
-        )
+        statespace/floater/MapFloater.cpp
+        statespace/floater/MapFloater.h
+        statespace/floater/MapFloaterVis.cpp
+)
 
 target_link_libraries(main ${PNG_LIBRARY})
 

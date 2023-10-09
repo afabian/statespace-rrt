@@ -18,8 +18,8 @@ void State3DMath::setMap(Map3D *_map) {
     setRandomStateConstraints(_minimums, _maximums);
 }
 
-void State3DMath::setCostScale(float scale) {
-    cost_scale = scale;
+void State3DMath::setCostScale(float _scale) {
+    cost_scale = _scale;
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////

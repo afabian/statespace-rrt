@@ -37,3 +37,7 @@ void StateFloater::set(double _t, double _y, double _vy) {
 std::string StateFloater::toString() {
     return std::string("(" + std::to_string(t) + ":" + std::to_string(y)  + "@" + std::to_string(vy) + ")");
 }
+
+bool StateFloater::operator==(const StateFloater &other) {
+    return t == other.t && y == other.y && vy == other.vy;
+}
