@@ -22,7 +22,6 @@ public:
     bool pointInObstacle(StateFloater* point);
     bool edgeInObstacle(StateFloater* pointA, StateFloater* pointB);
 
-    float pointCost(StateFloater* point);
     float edgeCost(StateFloater* pointA, StateFloater* pointB);
 
     double distance(StateFloater* a, StateFloater* b);

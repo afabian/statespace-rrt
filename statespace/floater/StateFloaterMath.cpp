@@ -1,5 +1,6 @@
 #include "StateFloaterMath.h"
 #include <cmath>
+#include <motion/Motion1DPositionVelocityAccelSingleTimed.h>
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
@@ -33,12 +34,45 @@ bool StateFloaterMath::edgeInObstacle(StateFloater *pointA, StateFloater *pointB
 
 /////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
 
-float StateFloaterMath::pointCost(StateFloater *point) {
-    return 0;
-}
-
 float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
-    return 0;
+
+    // check for impossible scenarios and return an infinite cost
+
+    if (pointB->t < pointA->t) return INFINITY;
+    if (pointB->t == pointA->t && (pointB->y != pointA->y || pointB->vy != pointA->vy)) return INFINITY;
+
+    // the cost is the amount of energy/thrust it takes to move from the initial state to the final state
+    // not all moves are possible, and impossible moves return infinity
+
+    Motion1DPositionVelocityAccelSingleTimed motion;
+
+    motion.configure_acceleration_limits(9.8, 5);
+    motion.configure_dt(1);
+
+    motion.jump_to(pointA->y, pointA->vy);
+    motion.set_target(pointB->y, pointB->vy);
+    motion.set_arrival_time(pointB->t - pointA->t);
+
+    motion.run_next_timestep();
+
+    float t[8] = {0}, a[8] = {0}, j[8] = {0};
+    motion.get_last_solution(t, a, j);
+
+    // if the solution is invalid, return an infinite cost
+
+
+
+    // integrate the jerk to calculate total energy spent
+
+    float ji = 0;
+    for (int i=1; i<8; i++) {
+        float dt = t[i] - t[i-1];
+        float jsum = j[i-1] * dt;
+        ji += jsum;
+    }
+
+    return ji;
+
 }
 
 ///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////

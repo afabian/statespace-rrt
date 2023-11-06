@@ -42,6 +42,24 @@ add_executable(main
         statespace/floater/MapFloater.cpp
         statespace/floater/MapFloater.h
         statespace/floater/MapFloaterVis.cpp
+        motion/Motion1DInterfaceSingle.h
+        motion/Motion1DInterfaceDouble.h
+        motion/Motion1DPositionVelocitySingle.cpp
+        motion/Motion1DPositionVelocitySingle.h
+        motion/Motion1DPositionVelocityDouble.cpp
+        motion/Motion1DPositionVelocityDouble.h
+        motion/Motion1DPositionVelocityAccelSingle.cpp
+        motion/Motion1DPositionVelocityAccelSingle.h
+        motion/Motion1DPositionVelocityAccelDouble.cpp
+        motion/Motion1DPositionVelocityAccelDouble.h
+        motion/Motion1DPositionVelocitySingleTimed.cpp
+        motion/Motion1DPositionVelocitySingleTimed.h
+        motion/Motion1DPositionVelocityDoubleTimed.cpp
+        motion/Motion1DPositionVelocityDoubleTimed.h
+        motion/Motion1DPositionVelocityAccelSingleTimed.cpp
+        motion/Motion1DPositionVelocityAccelSingleTimed.h
+        motion/Motion1DPositionVelocityAccelDoubleTimed.cpp
+        motion/Motion1DPositionVelocityAccelDoubleTimed.h
 )
 
 target_link_libraries(main ${PNG_LIBRARY})
