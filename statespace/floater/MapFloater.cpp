@@ -88,7 +88,7 @@ void MapFloater::make_grayscale() {
 
 void MapFloater::getBounds(StateFloater *minimums, StateFloater *maximums) {
     minimums->set(0, 0, 0);
-    maximums->set(image_width, image_height, 9999);
+    maximums->set(image_width, image_height, 10);
 }
 
 float MapFloater::getGrayscalePixel(int width_pos, int height_pos) {

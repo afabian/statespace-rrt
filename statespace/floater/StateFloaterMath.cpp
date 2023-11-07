@@ -58,10 +58,6 @@ float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
     float t[8] = {0}, a[8] = {0}, j[8] = {0};
     motion.get_last_solution(t, a, j);
 
-    // if the solution is invalid, return an infinite cost
-
-
-
     // integrate the jerk to calculate total energy spent
 
     float ji = 0;
@@ -70,6 +66,9 @@ float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
         float jsum = j[i-1] * dt;
         ji += jsum;
     }
+
+    // if no solution can be found we'll get a sum of zero
+    if (ji == 0) ji = INFINITY;
 
     return ji;
 
@@ -95,8 +94,8 @@ void StateFloaterMath::setRandomStateConstraints(StateFloater _minimums, StateFl
     minimums = _minimums;
     maximums = _maximums;
     // scale and shift are optimized to make getRandomState() fast
-    scale.t = (maximums.t - minimums.t) / RAND_MAX;
-    scale.y = (maximums.y - minimums.y) / RAND_MAX;
+    scale.t = (maximums.t - minimums.t - 1) / RAND_MAX;
+    scale.y = (maximums.y - minimums.y - 1) / RAND_MAX;
     scale.vy = (maximums.vy - minimums.vy) / RAND_MAX;
     shift.t = -minimums.t;
     shift.y = -minimums.y;

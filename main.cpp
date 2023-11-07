@@ -81,11 +81,11 @@ void main_3d() {
 }
 
 void main_floater() {
-    MapFloater map("maps/2d/floater.png");
+    MapFloater map("maps/floater/floater.png");
     StateFloaterMath state_math;
     RRT<StateFloater,StateFloaterMath,MapFloater> rrt(&map, &state_math);
-    StateFloater start{50, 50, 0};
-    StateFloater goal(550, 550, 0);
+    StateFloater start{50, 550, 0};
+    StateFloater goal(950, 50, 0);
     rrt.setStartState(&start);
     rrt.setGoalState(&goal, 0.01);
     rrt.configureSampling(10001, false);
