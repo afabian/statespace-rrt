@@ -1,16 +1,20 @@
 #include "StateFloaterMath.h"
 #include <cmath>
-#include <motion/Motion1DPositionVelocityAccelSingleTimed.h>
+#include <motion/Motion1DPositionVelocitySingleTimed.h>
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
-StateFloaterMath::StateFloaterMath() {
+StateFloaterMath::StateFloaterMath(float _max_velocity, float _max_accel) {
+    max_velocity = _max_velocity;
+    max_accel = _max_accel;
 }
 
 void StateFloaterMath::setMap(MapFloater *_map) {
     map = _map;
     StateFloater _minimums, _maximums;
     map->getBounds(&_minimums, &_maximums);
+    _minimums.vy = -max_velocity;
+    _maximums.vy = max_velocity;
     setRandomStateConstraints(_minimums, _maximums);
 }
 
@@ -44,10 +48,11 @@ float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
     // the cost is the amount of energy/thrust it takes to move from the initial state to the final state
     // not all moves are possible, and impossible moves return infinity
 
-    Motion1DPositionVelocityAccelSingleTimed motion;
+    Motion1DPositionVelocitySingleTimed motion;
 
-    motion.configure_acceleration_limits(9.8, 5);
-    motion.configure_dt(1);
+    motion.configure_velocity_limits(-max_velocity, max_velocity);
+    motion.configure_acceleration_limits(-max_accel, max_accel);
+    motion.configure_dt(0.1);
 
     motion.jump_to(pointA->y, pointA->vy);
     motion.set_target(pointB->y, pointB->vy);

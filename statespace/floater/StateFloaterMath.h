@@ -15,7 +15,7 @@
 class StateFloaterMath {
   
 public:
-    StateFloaterMath();
+    StateFloaterMath(float _max_velocity, float _max_accel);
 
     void setMap(MapFloater* _map);
 
@@ -37,6 +37,9 @@ protected:
     const float EDGE_WALK_SCALE = 1.0f;
 
     MapFloater* map = nullptr;
+
+    float max_velocity = 1;
+    float max_accel = 1;
 
 };
 
