@@ -81,14 +81,14 @@ void main_3d() {
 }
 
 void main_floater() {
-    MapFloater map("maps/floater/empty.png");
-    StateFloaterMath state_math(10, 10000);
+    MapFloater map("maps/floater/floater.png");
+    StateFloaterMath state_math(20, 10);
     RRT<StateFloater,StateFloaterMath,MapFloater> rrt(&map, &state_math);
     StateFloater start{50, 550, 0};
     StateFloater goal(950, 50, 0);
     rrt.setStartState(&start);
-    rrt.setGoalState(&goal, 0.01);
-    rrt.configureSampling(10001, false);
+    rrt.setGoalState(&goal, 0.1);
+    rrt.configureSampling(1001, true);
     rrt.configureRewiring(true, 0.05, 10);
     rrt.configureDebugOutput(true, true, "output/floater/", 0, 0);
     rrt.run();

@@ -8,6 +8,10 @@ MapFloater::MapFloater(std::string pngfile) {
     resetVis();
 }
 
+void MapFloater::setStateFloaterMath(StateFloaterMath *_stateFloaterMath) {
+    stateFloaterMath = _stateFloaterMath;
+}
+
 void MapFloater::load_png(std::string pngfile) {
     FILE *fp = fopen(pngfile.c_str(), "rb");
 
@@ -87,10 +91,13 @@ void MapFloater::make_grayscale() {
 }
 
 void MapFloater::getBounds(StateFloater *minimums, StateFloater *maximums) {
-    minimums->set(0, 0, 0);
+    minimums->set(0, 0, -INFINITY);
     maximums->set(image_width, image_height, INFINITY);
 }
 
 float MapFloater::getGrayscalePixel(int width_pos, int height_pos) {
+    bool out_of_bounds_ok = false;
+    if (width_pos < 0 || width_pos >= image_width) return out_of_bounds_ok;
+    if (height_pos < 0 || height_pos >= image_height) return out_of_bounds_ok;
     return grayscale[grayoffset(width_pos, height_pos)];
 }

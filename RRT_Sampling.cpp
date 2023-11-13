@@ -28,7 +28,7 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         candidate = state_math->getRandomState();
         nearest = getNearestNode(&candidate);
         if (nearest != nullptr) {
-            if (!state_math->edgeInObstacle(&candidate, &nearest->state)) {
+            if (!state_math->edgeInObstacle(&nearest->state, &candidate)) {
                 float cost = nearest->cost + state_math->edgeCost(&nearest->state, &candidate);
                 if (cost < goal.cost || allow_costly_nodes) {
                     suitable_found = true;
@@ -55,7 +55,7 @@ Node<State>* RRT<State,StateMath,Map>::getNearestNode(State* state) {
     float best_distance = DBL_MAX;
     Node<State>* best_node = nullptr;
     for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
-        float distance = state_math->distance(state, &node->state);
+        float distance = state_math->distance(&node->state, state);
         if (distance < best_distance) {
             best_distance = distance;
             best_node = node;

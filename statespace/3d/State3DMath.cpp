@@ -93,9 +93,9 @@ void State3DMath::setRandomStateConstraints(State3D _minimums, State3D _maximums
     scale.x = (maximums.x - minimums.x) / RAND_MAX;
     scale.y = (maximums.y - minimums.y) / RAND_MAX;
     scale.z = (maximums.z - minimums.z) / RAND_MAX;
-    shift.x = -minimums.x;
-    shift.y = -minimums.y;
-    shift.z = -minimums.z;
+    shift.x = minimums.x;
+    shift.y = minimums.y;
+    shift.z = minimums.z;
 }
 
 State3D State3DMath::getRandomState() {

@@ -19,7 +19,7 @@ void RRT<State, StateMath, Map>::renderVis() {
     Node<State>* node = graph.first();
     while (node != nullptr) {
         if (node->parent != nullptr) {
-            map->addVisLine(&node->state, &node->parent->state, 0x0000bbbb);
+            map->addVisLine(&node->parent->state, &node->state, 0x0000bbbb);
         }
         node = node->next;
     }
@@ -32,7 +32,7 @@ void RRT<State, StateMath, Map>::renderVis() {
         node = goal.parent;
         while (node != start) {
             Node<State>* parent = node->parent;
-            map->addVisLine(&node->state, &parent->state, 0x00ff0000);
+            map->addVisLine(&parent->state, &node->state, 0x00ff0000);
             node = parent;
         }
     }

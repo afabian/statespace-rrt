@@ -1,6 +1,5 @@
 #include "StateFloaterMath.h"
 #include <cmath>
-#include <motion/Motion1DPositionVelocitySingleTimed.h>
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
@@ -11,6 +10,7 @@ StateFloaterMath::StateFloaterMath(float _max_velocity, float _max_accel) {
 
 void StateFloaterMath::setMap(MapFloater *_map) {
     map = _map;
+    map->setStateFloaterMath(this);
     StateFloater _minimums, _maximums;
     map->getBounds(&_minimums, &_maximums);
     _minimums.vy = -max_velocity;
@@ -21,43 +21,42 @@ void StateFloaterMath::setMap(MapFloater *_map) {
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
 
 bool StateFloaterMath::pointInObstacle(StateFloater *point) {
-    return map->getGrayscalePixel(point->t, point->y) < 0.01;
+    float grayscale = map->getGrayscalePixel(point->t, point->y);
+    return grayscale < 0.01;
 }
 
-bool StateFloaterMath::edgeInObstacle(StateFloater *pointA, StateFloater *pointB) {
-    StateFloater diff(pointB->t - pointA->t, pointB->y - pointA->y, 0);
-    float step = EDGE_WALK_SCALE / hypotf(diff.t, diff.y);
-    for (float progress = 0; progress < 1; progress += step) {
-        StateFloater point(pointA->t + diff.t * progress, pointA->y + diff.y * progress, 0);
+bool StateFloaterMath::edgeInObstacle(StateFloater *source, StateFloater *dest) {
+    bool in_obstacle = false;
+    int points = dest->t - source->t;
+    float *y = (float *) malloc(sizeof(float) * points);
+    float *t = (float *) malloc(sizeof(float) * points);
+    edgePath(source, dest, t, y, points);
+    for (int i = 0; i < points; i++) {
+        StateFloater point(t[i], y[i], 0);
         if (pointInObstacle(&point)) {
-            return true;
-        }
+            in_obstacle = true;
+            break;
+        };
     }
-    return false;
+    free(y);
+    free(t);
+    return in_obstacle;
 }
 
 /////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
 
-float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
+float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
 
     // check for impossible scenarios and return an infinite cost
 
-    if (pointB->t < pointA->t) return INFINITY;
-    if (pointB->t == pointA->t && (pointB->y != pointA->y || pointB->vy != pointA->vy)) return INFINITY;
+    if (dest->t < source->t) return INFINITY;
+    if (dest->t == source->t && (dest->y != source->y || dest->vy != source->vy)) return INFINITY;
 
     // the cost is the amount of energy/thrust it takes to move from the initial state to the final state
     // not all moves are possible, and impossible moves return infinity
 
-    Motion1DPositionVelocitySingleTimed motion;
-
-    motion.configure_velocity_limits(-max_velocity, max_velocity);
-    motion.configure_acceleration_limits(-max_accel, max_accel);
-    motion.configure_dt(0.1);
-
-    motion.jump_to(pointA->y, pointA->vy);
-    motion.set_target(pointB->y, pointB->vy);
-    motion.set_arrival_time(pointB->t - pointA->t);
-
+    Motion1DPositionVelocityAccelSingleTimed motion;
+    configureMotionPlanner(&motion, source, dest);
     motion.run_next_timestep();
 
     float t[8] = {0}, a[8] = {0}, j[8] = {0};
@@ -65,26 +64,51 @@ float StateFloaterMath::edgeCost(StateFloater *pointA, StateFloater *pointB) {
 
     // integrate the jerk to calculate total energy spent
 
-    float ji = 0;
+    float ai = 0;
     for (int i=1; i<8; i++) {
         float dt = t[i] - t[i-1];
-        float jsum = j[i-1] * dt;
-        ji += jsum;
+        float asum = fabsf(a[i-1]) * dt;
+        ai += asum;
     }
 
     // if no solution can be found we'll get a sum of zero
-    if (ji == 0) ji = INFINITY;
+    if (ai == 0) ai = INFINITY;
 
-    return ji;
+    return ai;
 
+}
+
+void StateFloaterMath::edgePath(StateFloater *source, StateFloater *dest, float t[], float y[], float pointCount) {
+    Motion1DPositionVelocityAccelSingleTimed motion;
+    configureMotionPlanner(&motion, source, dest);
+    motion.reset_state();
+    float dt = (dest->t - source->t) / pointCount;
+    motion.configure_dt(dt);
+    for (int i=0; i<pointCount; i++) {
+        motion.run_next_timestep();
+        t[i] = source->t + i * dt;
+        y[i] = motion.get_position();
+    }
+}
+
+void StateFloaterMath::configureMotionPlanner(Motion1DPositionVelocityAccelSingleTimed *motion, StateFloater *source, StateFloater *dest) {
+    motion->configure_velocity_limits(-max_velocity, max_velocity);
+    motion->configure_acceleration_limits(-max_accel, max_accel);
+    motion->configure_dt(0.1);
+
+    motion->jump_to(source->y, source->vy);
+    motion->set_target(dest->y, dest->vy);
+    motion->set_arrival_time(dest->t - source->t);
 }
 
 ///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////
 
-double StateFloaterMath::distance(StateFloater *a, StateFloater *b) {
-    double dt = a->t - b->t;
-    double dy = a->y - b->y;
-    double dvy = a->vy - b->vy;
+double StateFloaterMath::distance(StateFloater *source, StateFloater *dest) {
+    double dt = dest->t - source->t;
+    double dy = dest->y - source->y;
+    double dvy = dest->vy - source->vy;
+    if (dvy == INFINITY || dvy == -INFINITY) dvy = 0;
+    if (dt < 0) return INFINITY;
     double dist = sqrt(dt*dt + dy*dy + dvy*dvy);
     return dist;
 }
@@ -102,9 +126,9 @@ void StateFloaterMath::setRandomStateConstraints(StateFloater _minimums, StateFl
     scale.t = (maximums.t - minimums.t - 1) / RAND_MAX;
     scale.y = (maximums.y - minimums.y - 1) / RAND_MAX;
     scale.vy = (maximums.vy - minimums.vy) / RAND_MAX;
-    shift.t = -minimums.t;
-    shift.y = -minimums.y;
-    shift.vy = -minimums.vy;
+    shift.t = minimums.t;
+    shift.y = minimums.y;
+    shift.vy = minimums.vy;
 }
 
 StateFloater StateFloaterMath::getRandomState() {

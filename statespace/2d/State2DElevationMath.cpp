@@ -92,8 +92,8 @@ void State2DElevationMath::setRandomStateConstraints(State2D _minimums, State2D 
     // scale and shift are optimized to make getRandomState() fast
     scale.x = (maximums.x - minimums.x - 1) / RAND_MAX;
     scale.y = (maximums.y - minimums.y - 1) / RAND_MAX;
-    shift.x = -minimums.x;
-    shift.y = -minimums.y;
+    shift.x = minimums.x;
+    shift.y = minimums.y;
 }
 
 State2D State2DElevationMath::getRandomState() {

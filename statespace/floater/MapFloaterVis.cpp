@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 
-
 void MapFloater::configureVis(int width, int height) {
     // MapFloater doesn't have a configurable output size
 }
@@ -24,6 +23,9 @@ void MapFloater::resetVis() {
 }
 
 void MapFloater::addVisPoint(StateFloater *point, unsigned int color) {
+    if (point->t < 0 || point->t >= image_width) return;
+    if (point->y < 0 || point->y >= image_height) return;
+
     png_bytep row = vis_rows[(int)point->y];
     row[(int)point->t * 4 + 0] = (color >> 0) & 0x000000ff;
     row[(int)point->t * 4 + 1] = (color >> 8) & 0x000000ff;
@@ -31,14 +33,34 @@ void MapFloater::addVisPoint(StateFloater *point, unsigned int color) {
     row[(int)point->t * 4 + 3] = 255;
 }
 
-void MapFloater::addVisLine(StateFloater *pointA, StateFloater *pointB, unsigned int color) {
-    if (pointA == pointB) return;
-    StateFloater diff(pointB->t - pointA->t, pointB->y - pointA->y, 0);
-    float step = 1.0f / hypotf(diff.t, diff.y);
-    for (float progress = 0; progress < 1; progress += step) {
-        StateFloater point(pointA->t + diff.t * progress, pointA->y + diff.y * progress, 0);
-        addVisPoint(&point, color);
+void MapFloater::addVisLine(StateFloater *source, StateFloater *dest, unsigned int color) {
+    if (source == dest) return;
+
+    int points = dest->t - source->t;
+    float* y = (float*)malloc(sizeof(float) * points);
+    float* t = (float*)malloc(sizeof(float) * points);
+    stateFloaterMath->edgePath(source, dest, t, y, points);
+
+    int last_y = y[0];
+
+    for (int i=0; i<points; i++) {
+        if (y[i] > last_y) {
+            for (int yi = last_y; yi < y[i]; yi++) {
+                StateFloater point2(t[i], yi, 0);
+                addVisPoint(&point2, color);
+            }
+        }
+        else {
+            for (int yi = last_y; yi > y[i]; yi--) {
+                StateFloater point2(t[i], yi, 0);
+                addVisPoint(&point2, color);
+            }
+        }
+        last_y = y[i];
     }
+
+    free(y);
+    free(t);
 }
 
 void MapFloater::renderVis(std::string pngfile) {

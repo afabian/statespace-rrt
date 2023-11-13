@@ -3,6 +3,7 @@
 
 #include "StateFloater.h"
 #include "MapFloater.h"
+#include <motion/Motion1DPositionVelocityAccelSingleTimed.h>
 
 // "Floater" is a sample system, with a hypothetical vehicle that moves forward
 // at a constant rate (so we could say it's position x equals time t), but
@@ -12,6 +13,8 @@
 // Maps are developed with obstacles in x-y space, so that the vehicle must
 // time its thrust commands to avoid the obstacle.
 
+class MapFloater;
+
 class StateFloaterMath {
   
 public:
@@ -20,17 +23,21 @@ public:
     void setMap(MapFloater* _map);
 
     bool pointInObstacle(StateFloater* point);
-    bool edgeInObstacle(StateFloater* pointA, StateFloater* pointB);
+    bool edgeInObstacle(StateFloater* source, StateFloater* dest);
 
-    float edgeCost(StateFloater* pointA, StateFloater* pointB);
+    float edgeCost(StateFloater* source, StateFloater* dest);
 
-    double distance(StateFloater* a, StateFloater* b);
+    void edgePath(StateFloater *source, StateFloater *dest, float t[], float y[], float pointCount);
+
+    double distance(StateFloater* source, StateFloater* dest);
     double approx_distance(StateFloater* a, StateFloater* b);
 
     void setRandomStateConstraints(StateFloater _minimums, StateFloater _maximums);
     StateFloater getRandomState();
 
 protected:
+    void configureMotionPlanner(Motion1DPositionVelocityAccelSingleTimed* motion, StateFloater* source, StateFloater* dest);
+
     StateFloater minimums, maximums;
     StateFloater scale, shift;
 
