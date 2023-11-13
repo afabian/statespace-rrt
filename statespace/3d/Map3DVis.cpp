@@ -40,7 +40,7 @@ void Map3D::resetVis() {
     )";
 }
 
-void Map3D::addVisPoint(State3D *point, int color) {
+void Map3D::addVisPoint(State3D *point, int color, bool big) {
     std::stringstream colorstream;
     colorstream << "0x" << std::setfill('0') << std::setw(6) << std::hex << color;
     html += "nodes.push({id: " + std::to_string((size_t)point) + ", x:" + std::to_string(point->x ) + ", y:" + std::to_string(point->y) + ", z:" + std::to_string(point->z) + ", color:" + colorstream.str() + "});\n";

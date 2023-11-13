@@ -16,7 +16,7 @@ public:
     void getBounds(StateFloater* minimums, StateFloater* maximums);
     void configureVis(int width, int height);
     void resetVis();
-    void addVisPoint(StateFloater* point, unsigned int color);
+    void addVisPoint(StateFloater* point, unsigned int color, bool big=false);
     void addVisLine(StateFloater* source, StateFloater* dest, unsigned int color);
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);

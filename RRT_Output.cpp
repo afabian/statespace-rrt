@@ -25,7 +25,7 @@ void RRT<State, StateMath, Map>::renderVis() {
     }
     node = graph.first();
     while (node != nullptr) {
-        map->addVisPoint(&node->state, 0x00006600);
+        map->addVisPoint(&node->state, 0x00006600, true);
         node = node->next;
     }
     if (goal.parent != nullptr) {

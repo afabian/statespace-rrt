@@ -22,15 +22,28 @@ void MapFloater::resetVis() {
     }
 }
 
-void MapFloater::addVisPoint(StateFloater *point, unsigned int color) {
+void MapFloater::addVisPoint(StateFloater *point, unsigned int color, bool big) {
     if (point->t < 0 || point->t >= image_width) return;
     if (point->y < 0 || point->y >= image_height) return;
 
-    png_bytep row = vis_rows[(int)point->y];
-    row[(int)point->t * 4 + 0] = (color >> 0) & 0x000000ff;
-    row[(int)point->t * 4 + 1] = (color >> 8) & 0x000000ff;
-    row[(int)point->t * 4 + 2] = (color >> 16) & 0x000000ff;
-    row[(int)point->t * 4 + 3] = 255;
+    if (big) {
+        StateFloater point2 = *point; point2.t++;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.t--;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.y++;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.y--;
+        addVisPoint(&point2, color);
+    }
+
+    else {
+        png_bytep row = vis_rows[(int) point->y];
+        row[(int) point->t * 4 + 0] = (color >> 0) & 0x000000ff;
+        row[(int) point->t * 4 + 1] = (color >> 8) & 0x000000ff;
+        row[(int) point->t * 4 + 2] = (color >> 16) & 0x000000ff;
+        row[(int) point->t * 4 + 3] = 255;
+    }
 }
 
 void MapFloater::addVisLine(StateFloater *source, StateFloater *dest, unsigned int color) {

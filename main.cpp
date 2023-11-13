@@ -82,7 +82,7 @@ void main_3d() {
 
 void main_floater() {
     MapFloater map("maps/floater/floater.png");
-    StateFloaterMath state_math(20, 10);
+    StateFloaterMath state_math(20, 5);
     RRT<StateFloater,StateFloaterMath,MapFloater> rrt(&map, &state_math);
     StateFloater start{50, 550, 0};
     StateFloater goal(950, 50, 0);

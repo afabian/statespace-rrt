@@ -23,12 +23,28 @@ void Map2D::resetVis() {
     }
 }
 
-void Map2D::addVisPoint(State2D *point, unsigned int color) {
-    png_bytep row = vis_rows[(int)point->y];
-    row[(int)point->x * 4 + 0] = (color >> 0) & 0x000000ff;
-    row[(int)point->x * 4 + 1] = (color >> 8) & 0x000000ff;
-    row[(int)point->x * 4 + 2] = (color >> 16) & 0x000000ff;
-    row[(int)point->x * 4 + 3] = 255;
+void Map2D::addVisPoint(State2D *point, unsigned int color, bool big) {
+    if (point->x < 0 || point->x >= image_width) return;
+    if (point->y < 0 || point->y >= image_height) return;
+
+    if (big) {
+        State2D point2 = *point; point2.x++;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.x--;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.y++;
+        addVisPoint(&point2, color);
+        point2 = *point; point2.y--;
+        addVisPoint(&point2, color);
+    }
+
+    else {
+        png_bytep row = vis_rows[(int) point->y];
+        row[(int) point->x * 4 + 0] = (color >> 0) & 0x000000ff;
+        row[(int) point->x * 4 + 1] = (color >> 8) & 0x000000ff;
+        row[(int) point->x * 4 + 2] = (color >> 16) & 0x000000ff;
+        row[(int) point->x * 4 + 3] = 255;
+    }
 }
 
 void Map2D::addVisLine(State2D *pointA, State2D *pointB, unsigned int color) {

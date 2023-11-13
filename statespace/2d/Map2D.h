@@ -12,7 +12,7 @@ public:
     void getBounds(State2D* minimums, State2D* maximums);
     void configureVis(int width, int height);
     void resetVis();
-    void addVisPoint(State2D* point, unsigned int color);
+    void addVisPoint(State2D* point, unsigned int color, bool big=false);
     void addVisLine(State2D* pointA, State2D* pointB, unsigned int color);
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);

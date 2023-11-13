@@ -29,7 +29,7 @@ public:
 
     void configureVis(int width, int height);
     void resetVis();
-    void addVisPoint(State3D* point, int color);
+    void addVisPoint(State3D* point, int color, bool big=false);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
     void renderVis(std::string filename_prefix);
     void takeScreenshot(std::string filename_prefix);
