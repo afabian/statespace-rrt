@@ -30,10 +30,12 @@ void RRT<State, StateMath, Map>::renderVis() {
     }
     if (goal.parent != nullptr) {
         node = goal.parent;
+        int goal_path_length = 0;
         while (node != start) {
             Node<State>* parent = node->parent;
             map->addVisLine(&parent->state, &node->state, 0x00ff0000);
             node = parent;
+            if (++goal_path_length > 1000) break;
         }
     }
 }

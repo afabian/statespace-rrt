@@ -23,13 +23,15 @@ void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
     if (target->parent == nullptr) return;
     for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
         float approx_distance = state_math->approx_distance(&node->state, &target->state);
-        if (approx_distance < neighborhood_distance_threshold) {
-            float new_cost = node->cost + state_math->edgeCost(&target->state, &node->state);
-            if (new_cost < target->cost) {
-                if (!state_math->edgeInObstacle(&node->state, &target->state)) {
-                    target->parent = node;
-                    float cost_delta = new_cost - target->cost;
-                    apply_cost_delta_recursive(target, cost_delta);
+        if (node != target) {
+            if (approx_distance < neighborhood_distance_threshold) {
+                float new_cost = node->cost + state_math->edgeCost(&node->state, &target->state);
+                if (new_cost < target->cost) {
+                    if (!state_math->edgeInObstacle(&node->state, &target->state)) {
+                        target->parent = node;
+                        float cost_delta = new_cost - target->cost;
+                        apply_cost_delta_recursive(target, cost_delta);
+                    }
                 }
             }
         }
@@ -40,7 +42,7 @@ template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::apply_cost_delta_recursive(Node<State> *root, float cost_delta) {
     root->cost += cost_delta;
     for (Node<State>* node = graph.first(); node != nullptr; node = node->next) {
-        if (node->parent == root) {
+        if (node->parent == root && node != root) {
             apply_cost_delta_recursive(node, cost_delta);
         }
     }
