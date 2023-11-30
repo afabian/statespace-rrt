@@ -18,6 +18,7 @@ public:
     void resetVis();
     void addVisPoint(StateFloater* point, unsigned int color, bool big=false);
     void addVisLine(StateFloater* source, StateFloater* dest, unsigned int color);
+    void addStraightLine(StateFloater a, StateFloater b, unsigned int color);
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
     float getGrayscalePixel(int width_pos, int height_pos);

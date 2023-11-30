@@ -15,7 +15,11 @@ void RRT<State, StateMath, Map>::configureDebugOutput(bool _sampling, bool _rewi
 
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::renderVis() {
+
+    // clear the output
     map->resetVis();
+
+    // add all of the edges
     Node<State>* node = graph.first();
     while (node != nullptr) {
         if (node->parent != nullptr) {
@@ -23,11 +27,15 @@ void RRT<State, StateMath, Map>::renderVis() {
         }
         node = node->next;
     }
+
+    // add all of the points
     node = graph.first();
     while (node != nullptr) {
         map->addVisPoint(&node->state, 0x00006600, true);
         node = node->next;
     }
+
+    // add the goal path
     if (goal.parent != nullptr) {
         node = goal.parent;
         int goal_path_length = 0;

@@ -30,7 +30,7 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         if (nearest != nullptr) {
             if (!state_math->edgeInObstacle(&nearest->state, &candidate)) {
                 float cost = nearest->cost + state_math->edgeCost(&nearest->state, &candidate);
-                if (cost < goal.cost || allow_costly_nodes) {
+                if ((cost < goal.cost || allow_costly_nodes) && cost < INFINITY) {
                     suitable_found = true;
                     newnode = graph.addNode(&candidate, nearest, cost);
                     float goal_distance = state_math->distance(&newnode->state, &goal.state);

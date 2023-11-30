@@ -1,5 +1,6 @@
 #include "StateFloaterMath.h"
 #include <cmath>
+#include <iostream>
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
@@ -62,7 +63,7 @@ float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
     float t[8] = {0}, a[8] = {0}, j[8] = {0};
     motion.get_last_solution(t, a, j);
 
-    // integrate the jerk to calculate total energy spent
+    // integrate the acceleration over time to calculate total energy spent
 
     float ai = 0;
     for (int i=1; i<8; i++) {
@@ -73,21 +74,28 @@ float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
 
     // if no solution can be found we'll get a sum of zero
     if (ai == 0) ai = INFINITY;
+    if (motion.get_error_code().value != 0) ai = INFINITY;
+
+    // see if the timespan covered by the path matches the timespan between our source and dest
+    float solution_time = t[3];
+    float problem_time = dest->t - source->t;
+    float time_ratio = problem_time == 0 ? 0 : solution_time / problem_time;
+    if (time_ratio > 1.01f || time_ratio < 0.99f) ai = INFINITY;
 
     return ai;
-
 }
 
 void StateFloaterMath::edgePath(StateFloater *source, StateFloater *dest, float t[], float y[], float pointCount) {
     Motion1DPositionVelocityAccelSingleTimed motion;
     configureMotionPlanner(&motion, source, dest);
     motion.reset_state();
-    float dt = (dest->t - source->t) / pointCount;
+    // this should include a point at the source point and at the destination point, as well as intermediate points
+    float dt = (dest->t - source->t) / (pointCount-1);
     motion.configure_dt(dt);
     for (int i=0; i<pointCount; i++) {
-        motion.run_next_timestep();
         t[i] = source->t + i * dt;
         y[i] = motion.get_position();
+        motion.run_next_timestep();
     }
 }
 

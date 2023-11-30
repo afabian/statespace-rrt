@@ -39,41 +39,54 @@ void MapFloater::addVisPoint(StateFloater *point, unsigned int color, bool big) 
 
     else {
         png_bytep row = vis_rows[(int) point->y];
-        row[(int) point->t * 4 + 0] = (color >> 0) & 0x000000ff;
-        row[(int) point->t * 4 + 1] = (color >> 8) & 0x000000ff;
-        row[(int) point->t * 4 + 2] = (color >> 16) & 0x000000ff;
-        row[(int) point->t * 4 + 3] = 255;
+        uint8_t newpoint[4];
+        newpoint[0] = (color >> 0) & 0x000000ff;
+        newpoint[1] = (color >> 8) & 0x000000ff;
+        newpoint[2] = (color >> 16) & 0x000000ff;
+        newpoint[3] = 255;
+
+        row[(int) point->t * 4 + 0] = row[(int) point->t * 4 + 0] / 2 + newpoint[0] / 2;
+        row[(int) point->t * 4 + 1] = row[(int) point->t * 4 + 1] / 2 + newpoint[1] / 2;
+        row[(int) point->t * 4 + 2] = row[(int) point->t * 4 + 2] / 2 + newpoint[2] / 2;
+        row[(int) point->t * 4 + 3] = row[(int) point->t * 4 + 3] / 2 + newpoint[3] / 2;
     }
 }
 
 void MapFloater::addVisLine(StateFloater *source, StateFloater *dest, unsigned int color) {
     if (source == dest) return;
 
-    int points = dest->t - source->t;
+    int points = (int)ceilf(dest->t - source->t) + 1;
     float* y = (float*)malloc(sizeof(float) * points);
     float* t = (float*)malloc(sizeof(float) * points);
     stateFloaterMath->edgePath(source, dest, t, y, points);
 
-    int last_y = y[0];
+    StateFloater last_point, point;
 
-    for (int i=0; i<points; i++) {
-        if (y[i] > last_y) {
-            for (int yi = last_y; yi < y[i]; yi++) {
-                StateFloater point2(t[i], yi, 0);
-                addVisPoint(&point2, color);
-            }
-        }
-        else {
-            for (int yi = last_y; yi > y[i]; yi--) {
-                StateFloater point2(t[i], yi, 0);
-                addVisPoint(&point2, color);
-            }
-        }
-        last_y = y[i];
+    last_point.t = t[0];
+    last_point.y = y[0];
+
+    for (int i=1; i<points; i++) {
+        point.t = t[i];
+        point.y = y[i];
+        addStraightLine(last_point, point, color);
+        last_point = point;
     }
 
     free(y);
     free(t);
+}
+
+void MapFloater::addStraightLine(StateFloater a, StateFloater b, unsigned int color) {
+    StateFloater point;
+    float dist = hypotf(b.t - a.t, b.y - a.y);
+    float dist_per_px = 1;
+    int steps = (int)ceilf(dist / dist_per_px);
+    for (int i=0; i<steps; i++) {
+        float scale = (float)i / steps;
+        point.t = a.t + (b.t - a.t) * scale;
+        point.y = a.y + (b.y - a.y) * scale;
+        addVisPoint(&point, color);
+    }
 }
 
 void MapFloater::renderVis(std::string pngfile) {
