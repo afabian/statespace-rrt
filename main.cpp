@@ -73,7 +73,7 @@ void main_3d() {
     State3D goal_3d(95, 95, 95);
     rrt.setStartState(&start_3d);
     rrt.setGoalState(&goal_3d, 0.05);
-    rrt.configureSampling(10001, true);
+    rrt.configureSampling(1001, true);
     rrt.configureRewiring(true, 0.25, 10);
     rrt.configureDebugOutput(true, true, "output/3d/", 1920, 1080);
     rrt.run();
@@ -88,7 +88,7 @@ void main_floater() {
     StateFloater goal(950, 50, 0);
     rrt.setStartState(&start);
     rrt.setGoalState(&goal, 0.1);
-    rrt.configureSampling(501, true);
+    rrt.configureSampling(5001, true);
     rrt.configureRewiring(true, 0.05, 10);
     rrt.configureDebugOutput(true, true, "output/floater/", 0, 0);
     rrt.run();
