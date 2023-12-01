@@ -19,6 +19,7 @@ public:
     void addVisPoint(StateFloater* point, unsigned int color, bool big=false);
     void addVisLine(StateFloater* source, StateFloater* dest, unsigned int color);
     void addStraightLine(StateFloater a, StateFloater b, unsigned int color);
+    void addGoalDetail(StateFloater* source, StateFloater* dest);
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
     float getGrayscalePixel(int width_pos, int height_pos);
@@ -30,6 +31,7 @@ private:
     void write_video(std::string filename_prefix);
     void make_grayscale();
     inline int grayoffset(int width_pos, int height_pos) { return height_pos * image_width + width_pos; }
+    void add_state_display(StateFloater state);
 
     StateFloaterMath* stateFloaterMath = nullptr;
 
@@ -40,6 +42,8 @@ private:
 
     float* grayscale = nullptr;
     std::string filelist = "";
+
+    float accel_scale = 50;
 
 };
 

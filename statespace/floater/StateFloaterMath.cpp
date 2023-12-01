@@ -29,18 +29,20 @@ bool StateFloaterMath::pointInObstacle(StateFloater *point) {
 bool StateFloaterMath::edgeInObstacle(StateFloater *source, StateFloater *dest) {
     bool in_obstacle = false;
     int points = dest->t - source->t;
-    float *y = (float *) malloc(sizeof(float) * points);
     float *t = (float *) malloc(sizeof(float) * points);
-    edgePath(source, dest, t, y, points);
+    float *p = (float *) malloc(sizeof(float) * points);
+    float *a = (float *) malloc(sizeof(float) * points);
+    edgePath(source, dest, t, p, a, points);
     for (int i = 0; i < points; i++) {
-        StateFloater point(t[i], y[i], 0);
+        StateFloater point(t[i], p[i], 0);
         if (pointInObstacle(&point)) {
             in_obstacle = true;
             break;
         };
     }
-    free(y);
     free(t);
+    free(p);
+    free(a);
     return in_obstacle;
 }
 
@@ -85,7 +87,7 @@ float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
     return ai;
 }
 
-void StateFloaterMath::edgePath(StateFloater *source, StateFloater *dest, float t[], float y[], float pointCount) {
+void StateFloaterMath::edgePath(StateFloater *source, StateFloater *dest, float t[], float p[], float a[], float pointCount) {
     Motion1DPositionVelocityAccelSingleTimed motion;
     configureMotionPlanner(&motion, source, dest);
     motion.reset_state();
@@ -94,7 +96,8 @@ void StateFloaterMath::edgePath(StateFloater *source, StateFloater *dest, float 
     motion.configure_dt(dt);
     for (int i=0; i<pointCount; i++) {
         t[i] = source->t + i * dt;
-        y[i] = motion.get_position();
+        p[i] = motion.get_position();
+        a[i] = motion.get_acceleration();
         motion.run_next_timestep();
     }
 }

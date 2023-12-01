@@ -56,24 +56,72 @@ void MapFloater::addVisLine(StateFloater *source, StateFloater *dest, unsigned i
     if (source == dest) return;
 
     int points = (int)ceilf(dest->t - source->t) + 1;
-    float* y = (float*)malloc(sizeof(float) * points);
+    float* p = (float*)malloc(sizeof(float) * points);
+    float* a = (float*)malloc(sizeof(float) * points);
     float* t = (float*)malloc(sizeof(float) * points);
-    stateFloaterMath->edgePath(source, dest, t, y, points);
+    stateFloaterMath->edgePath(source, dest, t, p, a, points);
 
     StateFloater last_point, point;
 
     last_point.t = t[0];
-    last_point.y = y[0];
+    last_point.y = p[0];
 
     for (int i=1; i<points; i++) {
         point.t = t[i];
-        point.y = y[i];
+        point.y = p[i];
         addStraightLine(last_point, point, color);
         last_point = point;
     }
 
-    free(y);
+    free(p);
+    free(a);
     free(t);
+}
+
+void MapFloater::addGoalDetail(StateFloater *source, StateFloater *dest) {
+    int points = (int)ceilf(dest->t - source->t) + 1;
+    float* p = (float*)malloc(sizeof(float) * points);
+    float* a = (float*)malloc(sizeof(float) * points);
+    float* t = (float*)malloc(sizeof(float) * points);
+    stateFloaterMath->edgePath(source, dest, t, p, a, points);
+
+    for (int step=0; step<points; step++) {
+        StateFloater state;
+        state.t = t[step];
+        state.y = p[step];
+        state.vy = a[step];
+        add_state_display(state);
+    }
+
+    free(p);
+    free(a);
+    free(t);
+}
+
+void MapFloater::add_state_display(StateFloater state) {
+
+    unsigned int color = 0x000000ff;
+
+    int t = state.t;
+    int y0 = image_height - 50;
+    int y1 = image_height - 50 - (state.vy * accel_scale);
+
+    png_bytep row = vis_rows[y0];
+    row[(int) t * 4 + 0] = (color >> 0) & 0x000000ff;
+    row[(int) t * 4 + 1] = (color >> 8) & 0x000000ff;
+    row[(int) t * 4 + 2] = (color >> 16) & 0x000000ff;
+    row[(int) t * 4 + 3] = 255;
+
+    for (int y=y0; y!=y1; y+=sign(y1-y0)) {
+        if (y >= 0 && y < image_height) {
+            png_bytep row = vis_rows[y];
+            row[(int) t * 4 + 0] = (color >> 0) & 0x000000ff;
+            row[(int) t * 4 + 1] = (color >> 8) & 0x000000ff;
+            row[(int) t * 4 + 2] = (color >> 16) & 0x000000ff;
+            row[(int) t * 4 + 3] = 255;
+        }
+    }
+
 }
 
 void MapFloater::addStraightLine(StateFloater a, StateFloater b, unsigned int color) {

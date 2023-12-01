@@ -2,6 +2,7 @@
 #define RRT_UTILS_H
 
 #include <sys/stat.h>
+#include <string>
 
 int mkpath(const char* file_path, mode_t mode);
 

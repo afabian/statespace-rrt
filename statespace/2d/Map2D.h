@@ -14,6 +14,7 @@ public:
     void resetVis();
     void addVisPoint(State2D* point, unsigned int color, bool big=false);
     void addVisLine(State2D* pointA, State2D* pointB, unsigned int color);
+    void addGoalDetail(State2D* source, State2D* dest);
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
     float getGrayscalePixel(int width_pos, int height_pos);

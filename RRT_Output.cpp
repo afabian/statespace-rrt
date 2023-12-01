@@ -42,6 +42,7 @@ void RRT<State, StateMath, Map>::renderVis() {
         while (node != start) {
             Node<State>* parent = node->parent;
             map->addVisLine(&parent->state, &node->state, 0x00ff0000);
+            map->addGoalDetail(&parent->state, &node->state);
             node = parent;
             if (++goal_path_length > 1000) break;
         }

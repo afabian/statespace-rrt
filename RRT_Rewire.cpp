@@ -28,6 +28,9 @@ void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
                 float new_cost = node->cost + state_math->edgeCost(&node->state, &target->state);
                 if (new_cost < target->cost) {
                     if (!state_math->edgeInObstacle(&node->state, &target->state)) {
+                        if (target == &goal) { // TODO: TEMP
+                            target->parent = target->parent;
+                        }
                         target->parent = node;
                         float cost_delta = new_cost - target->cost;
                         apply_cost_delta_recursive(target, cost_delta);

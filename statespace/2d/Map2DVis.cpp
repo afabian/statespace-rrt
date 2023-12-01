@@ -57,6 +57,9 @@ void Map2D::addVisLine(State2D *pointA, State2D *pointB, unsigned int color) {
     }
 }
 
+void Map2D::addGoalDetail(State2D* source, State2D* dest) {
+}
+
 void Map2D::renderVis(std::string pngfile) {
     write_png(pngfile);
 }

@@ -52,6 +52,9 @@ void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
     html += "edges.push({source: " + std::to_string((size_t)pointA) + ", target: " + std::to_string((size_t)pointB) + ", color:" + colorstream.str() + "});\n";
 }
 
+void Map3D::addGoalDetail(State3D* source, State3D* dest) {
+}
+
 void Map3D::renderVis(std::string filename_prefix) {
 
     // map objects

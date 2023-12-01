@@ -31,6 +31,7 @@ public:
     void resetVis();
     void addVisPoint(State3D* point, int color, bool big=false);
     void addVisLine(State3D* pointA, State3D* pointB, int color);
+    void addGoalDetail(State3D* source, State3D* dest);
     void renderVis(std::string filename_prefix);
     void takeScreenshot(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);

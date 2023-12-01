@@ -27,7 +27,7 @@ public:
 
     float edgeCost(StateFloater* source, StateFloater* dest);
 
-    void edgePath(StateFloater *source, StateFloater *dest, float t[], float y[], float pointCount);
+    void edgePath(StateFloater *source, StateFloater *dest, float t[], float p[], float a[], float pointCount);
 
     double distance(StateFloater* source, StateFloater* dest);
     double approx_distance(StateFloater* a, StateFloater* b);
