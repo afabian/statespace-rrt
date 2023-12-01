@@ -10,10 +10,13 @@ void MapFloater::configureVis(int width, int height) {
 }
 
 void MapFloater::resetVis() {
-    for (int height_pos = 0; height_pos < image_height; height_pos++) {
+    for (int height_pos = 0; height_pos < image_height + accel_chart_height; height_pos++) {
         png_bytep row = vis_rows[height_pos];
         for (int width_pos = 0; width_pos < image_width; width_pos++) {
-            uint8_t value = grayscale[grayoffset(width_pos, height_pos)] * 255;
+            uint8_t value = 200;
+            if (height_pos < image_height) {
+                value = grayscale[grayoffset(width_pos, height_pos)] * 255;
+            }
             row[width_pos * 4 + 0] = value;
             row[width_pos * 4 + 1] = value;
             row[width_pos * 4 + 2] = value;
@@ -100,11 +103,11 @@ void MapFloater::addGoalDetail(StateFloater *source, StateFloater *dest) {
 
 void MapFloater::add_state_display(StateFloater state) {
 
-    unsigned int color = 0x000000ff;
+    unsigned int color = 0x00ff0000;
 
     int t = state.t;
-    int y0 = image_height - 50;
-    int y1 = image_height - 50 - (state.vy * accel_scale);
+    int y0 = image_height + (accel_chart_height / 2);
+    int y1 = image_height + (accel_chart_height / 2) - (state.vy * accel_scale);
 
     png_bytep row = vis_rows[y0];
     row[(int) t * 4 + 0] = (color >> 0) & 0x000000ff;
@@ -113,7 +116,7 @@ void MapFloater::add_state_display(StateFloater state) {
     row[(int) t * 4 + 3] = 255;
 
     for (int y=y0; y!=y1; y+=sign(y1-y0)) {
-        if (y >= 0 && y < image_height) {
+        if (y >= 0 && y < image_height + accel_chart_height) {
             png_bytep row = vis_rows[y];
             row[(int) t * 4 + 0] = (color >> 0) & 0x000000ff;
             row[(int) t * 4 + 1] = (color >> 8) & 0x000000ff;
@@ -161,7 +164,7 @@ void MapFloater::write_png(std::string filename_prefix) {
     png_set_IHDR(
             png,
             info,
-            image_width, image_height,
+            image_width, image_height + accel_chart_height,
             8,
             PNG_COLOR_TYPE_RGBA,
             PNG_INTERLACE_NONE,

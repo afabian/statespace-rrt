@@ -18,6 +18,8 @@ void RRT<State, StateMath, Map>::rewireAll() {
     rewireNode(&goal);
 }
 
+// look for lower-cost parents than the node's current parent.
+// if one is found, make it the nodes parent and then recalculate the node and its childrens' costs.
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
     if (target->parent == nullptr) return;
@@ -25,7 +27,8 @@ void RRT<State, StateMath, Map>::rewireNode(Node<State> *target) {
         float approx_distance = state_math->approx_distance(&node->state, &target->state);
         if (node != target) {
             if (approx_distance < neighborhood_distance_threshold) {
-                float new_cost = node->cost + state_math->edgeCost(&node->state, &target->state);
+                float edge_cost = state_math->edgeCost(&node->state, &target->state);
+                float new_cost = node->cost + edge_cost;
                 if (new_cost < target->cost) {
                     if (!state_math->edgeInObstacle(&node->state, &target->state)) {
                         if (target == &goal) { // TODO: TEMP
@@ -49,7 +52,7 @@ void RRT<State, StateMath, Map>::apply_cost_delta_recursive(Node<State> *root, f
             apply_cost_delta_recursive(node, cost_delta);
         }
     }
-    if (goal.parent == root) {
+    if (goal.parent == root && &goal != root) {
         apply_cost_delta_recursive(&goal, cost_delta);
     }
 }

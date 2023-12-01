@@ -37,16 +37,26 @@ void RRT<State, StateMath, Map>::renderVis() {
 
     // add the goal path
     if (goal.parent != nullptr) {
-        node = goal.parent;
-        int goal_path_length = 0;
+        node = &goal;
         while (node != start) {
             Node<State>* parent = node->parent;
             map->addVisLine(&parent->state, &node->state, 0x00ff0000);
             map->addGoalDetail(&parent->state, &node->state);
             node = parent;
-            if (++goal_path_length > 1000) break;
         }
     }
+
+    // print the final path
+    if (goal.parent != nullptr) {
+        std::cout << "Final Path:" << std::endl;
+        std::cout << goal.state.toString() << std::endl;
+        node = &goal;
+        while (node != start) {
+            node = node->parent;
+            std::cout << node->state.toString() << std::endl;
+        }
+    }
+
 }
 
 template<class State, class StateMath, class Map>

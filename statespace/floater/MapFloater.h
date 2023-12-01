@@ -11,7 +11,7 @@ class StateFloaterMath;
 class MapFloater {
 
 public:
-    MapFloater(std::string pngfile);
+    MapFloater(std::string pngfile, float _accel_scale);
     void setStateFloaterMath(StateFloaterMath* _stateFloaterMath);
     void getBounds(StateFloater* minimums, StateFloater* maximums);
     void configureVis(int width, int height);
@@ -37,13 +37,14 @@ private:
 
     int image_width = 0;
     int image_height = 0;
+    int accel_chart_height = 200;
     png_bytep *image_rows = NULL;
     png_bytep *vis_rows = NULL;
 
     float* grayscale = nullptr;
     std::string filelist = "";
 
-    float accel_scale = 50;
+    float accel_scale = 1;
 
 };
 

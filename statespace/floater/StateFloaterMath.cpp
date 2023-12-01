@@ -125,7 +125,7 @@ double StateFloaterMath::distance(StateFloater *source, StateFloater *dest) {
 }
 
 double StateFloaterMath::approx_distance(StateFloater *a, StateFloater *b) {
-    return 0;
+    return 0; // TODO Fix?
 }
 
 ////////////////////////////////////////// SAMPLE GENERATION /////////////////////////////////////////////

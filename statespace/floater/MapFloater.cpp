@@ -2,7 +2,8 @@
 #include <cstdint>
 #include "MapFloater.h"
 
-MapFloater::MapFloater(std::string pngfile) {
+MapFloater::MapFloater(std::string pngfile, float _accel_scale) {
+    accel_scale = _accel_scale;
     load_png(pngfile);
     make_grayscale();
     resetVis();
@@ -67,8 +68,8 @@ void MapFloater::load_png(std::string pngfile) {
         image_rows[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
     }
 
-    vis_rows = (png_bytep*)malloc(sizeof(png_bytep) * image_height);
-    for(int y = 0; y < image_height; y++) {
+    vis_rows = (png_bytep*)malloc(sizeof(png_bytep) * (image_height + accel_chart_height));
+    for(int y = 0; y < (image_height + accel_chart_height); y++) {
         vis_rows[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
     }
 
