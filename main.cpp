@@ -9,9 +9,13 @@
 #include "statespace/3d/State3DMath.h"
 #include "statespace/3d/Map3D.h"
 
- #include "statespace/floater/StateFloater.h"
- #include "statespace/floater/StateFloaterMath.h"
- #include "statespace/floater/MapFloater.h"
+#include "statespace/floater/StateFloater.h"
+#include "statespace/floater/StateFloaterMath.h"
+#include "statespace/floater/MapFloater.h"
+
+#include "statespace/racer/StateRacer.h"
+#include "statespace/racer/StateRacerMath.h"
+#include "statespace/racer/MapRacer.h"
 
 #include <iostream>
 #include <cstring>
@@ -88,11 +92,26 @@ void main_floater() {
     StateFloater goal(950, 50, 0);
     rrt.setStartState(&start);
     rrt.setGoalState(&goal, 0.1);
-    rrt.configureSampling(10001, true);
-    rrt.configureRewiring(true, 0.05, 10);
+    rrt.configureSampling(20001, false);
+    rrt.configureRewiring(true, 0.05, 2);
     rrt.configureDebugOutput(true, true, "output/floater/", 0, 0);
     rrt.run();
     cout << "Floater: Final path cost: " << rrt.getGoalCost() << endl;
+}
+
+void main_racer() {
+    MapRacer map("maps/racer/racer.png");
+    StateRacerMath state_math(20, 1);
+    RRT<StateRacer,StateRacerMath,MapRacer> rrt(&map, &state_math);
+    StateRacer start{0, 50, 550, 0, 0};
+    StateRacer goal(0, 950, 50, 0, 0);
+    rrt.setStartState(&start);
+    rrt.setGoalState(&goal, 0.1);
+    rrt.configureSampling(20001, false);
+    rrt.configureRewiring(true, 0.05, 2);
+    rrt.configureDebugOutput(true, true, "output/racer/", 0, 0);
+    rrt.run();
+    cout << "Racer: Final path cost: " << rrt.getGoalCost() << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -112,6 +131,10 @@ int main(int argc, char* argv[]) {
     }
     if (argc == 1 || strcmp(argv[1], "floater") == 0) {
         main_floater();
+    }
+
+    if (argc == 1 || strcmp(argv[1], "racer") == 0) {
+        main_racer();
     }
 
     auto finish = high_resolution_clock::now();

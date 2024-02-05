@@ -19,8 +19,8 @@ public:
     float pointCost(State2D* point);
     float edgeCost(State2D* pointA, State2D* pointB);
 
-    double distance(State2D* a, State2D* b);
-    double approx_distance(State2D* a, State2D* b);
+    double distance(State2D* source, State2D* dest);
+    double approx_distance(State2D* source, State2D* dest);
 
     void setRandomStateConstraints(State2D _minimums, State2D _maximums);
     State2D getRandomState();

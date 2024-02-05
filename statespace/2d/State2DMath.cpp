@@ -68,15 +68,15 @@ float State2DMath::edgeCost(State2D *pointA, State2D *pointB) {
 
 ///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////
 
-double State2DMath::distance(State2D* a, State2D* b) {
-    double dx = a->x - b->x;
-    double dy = a->y - b->y;
+double State2DMath::distance(State2D* source, State2D* dest) {
+    double dx = dest->x - source->x;
+    double dy = dest->y - source->y;
     double dist = hypot(dx, dy);
     return dist;
 }
 
-double State2DMath::approx_distance(State2D* a, State2D* b) {
-    return fabs(a->x - b->x) + fabs(a->y - b->y);
+double State2DMath::approx_distance(State2D* source, State2D* dest) {
+    return fabs(dest->x - source->x) + fabs(dest->y - source->y);
 }
 
 ////////////////////////////////////////// SAMPLE GENERATION /////////////////////////////////////////////

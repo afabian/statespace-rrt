@@ -42,6 +42,13 @@ add_executable(main
         statespace/floater/MapFloater.cpp
         statespace/floater/MapFloater.h
         statespace/floater/MapFloaterVis.cpp
+        statespace/racer/MapRacer.cpp
+        statespace/racer/MapRacerVis.cpp
+        statespace/racer/MapRacer.h
+        statespace/racer/StateRacer.cpp
+        statespace/racer/StateRacer.h
+        statespace/racer/StateRacerMath.cpp
+        statespace/racer/StateRacerMath.h
         motion/Motion1DInterfaceSingle.h
         motion/Motion1DInterfaceDouble.h
         motion/Motion1DPositionVelocitySingle.cpp
