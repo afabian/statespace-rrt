@@ -29,6 +29,8 @@ public:
     StateRacer getRandomState();
 
 protected:
+    void generateStateTransitionLUT();
+
     StateRacer minimums, maximums;
     StateRacer scale, shift;
 

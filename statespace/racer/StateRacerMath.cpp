@@ -14,6 +14,19 @@ void StateRacerMath::setMap(MapRacer *_map) {
     StateRacer _minimums, _maximums;
     map->getBounds(&_minimums, &_maximums);
     setRandomStateConstraints(_minimums, _maximums);
+    generateStateTransitionLUT();
+}
+
+////////////////////////////////////////// MODEL SIMULATION //////////////////////////////////////////////
+
+void StateRacerMath::generateStateTransitionLUT() {
+    // do forward simulations of the model, iterating over starting states and possible internal control inputs
+    // to generate a map of output states vs. input states.
+    // the main RRT loop will use this map to figure out if two states are connectable, and what the cost is.
+
+    for (float vi = 0; vi < max_velocity; vi += max_velocity / velocity_steps) {
+
+    }
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
