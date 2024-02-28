@@ -67,6 +67,8 @@ add_executable(main
         motion/Motion1DPositionVelocityAccelSingleTimed.h
         motion/Motion1DPositionVelocityAccelDoubleTimed.cpp
         motion/Motion1DPositionVelocityAccelDoubleTimed.h
+        statespace/racer/ModelRacer.cpp
+        statespace/racer/ModelRacer.h
 )
 
 target_link_libraries(main ${PNG_LIBRARY})

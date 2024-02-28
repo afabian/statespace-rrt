@@ -16,6 +16,7 @@
 #include "statespace/racer/StateRacer.h"
 #include "statespace/racer/StateRacerMath.h"
 #include "statespace/racer/MapRacer.h"
+#include "statespace/racer/ModelRacer.h"
 
 #include <iostream>
 #include <cstring>
@@ -101,7 +102,12 @@ void main_floater() {
 
 void main_racer() {
     MapRacer map("maps/racer/racer.png");
-    StateRacerMath state_math(20, 1);
+    ModelRacer model(1, 1, 1, 0.1, 0.0001);
+    StateRacerMath state_math;
+    state_math.setMax(10, 10, 100, 100);
+    state_math.setRes(100, 100, 100);
+    state_math.setSteps(100, 100, 100, 100);
+    state_math.setModel(&model);
     RRT<StateRacer,StateRacerMath,MapRacer> rrt(&map, &state_math);
     StateRacer start{0, 50, 550, 0, 0};
     StateRacer goal(0, 950, 50, 0, 0);

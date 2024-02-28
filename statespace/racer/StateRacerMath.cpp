@@ -4,9 +4,26 @@
 
 ///////////////////////////////////////////////  SETUP  //////////////////////////////////////////////////
 
-StateRacerMath::StateRacerMath(float _max_velocity, float _max_lateral_accel) {
-    max_velocity = _max_velocity;
-    max_lateral_accel = _max_lateral_accel;
+StateRacerMath::StateRacerMath() { }
+
+void StateRacerMath::setMax(float _V_MAX, float _T_MAX, float _X_MAX, float _Y_MAX) {
+    V_MAX = _V_MAX;
+    T_MAX = _T_MAX;
+    X_MAX = _X_MAX;
+    Y_MAX = _Y_MAX;
+}
+
+void StateRacerMath::setRes(int _LUT_V_RES, int _LUT_X_RES, int _LUT_Y_RES) {
+    LUT_V_RES = _LUT_V_RES;
+    LUT_X_RES = _LUT_X_RES;
+    LUT_Y_RES = _LUT_Y_RES;
+}
+
+void StateRacerMath::setSteps(int _V_STEPS, int _A_STEPS, int _S_STEPS, int _T_STEPS) {
+    V_STEPS = _V_STEPS;
+    A_STEPS = _A_STEPS;
+    S_STEPS = _S_STEPS;
+    T_STEPS = _T_STEPS;
 }
 
 void StateRacerMath::setMap(MapRacer *_map) {
@@ -14,19 +31,72 @@ void StateRacerMath::setMap(MapRacer *_map) {
     StateRacer _minimums, _maximums;
     map->getBounds(&_minimums, &_maximums);
     setRandomStateConstraints(_minimums, _maximums);
-    generateStateTransitionLUT();
+    if (model != nullptr && map != nullptr) {
+        generateStateTransitionLUT();
+    }
+}
+
+void StateRacerMath::setModel(ModelRacer *_model) {
+    model = _model;
+    if (model != nullptr && map != nullptr) {
+        generateStateTransitionLUT();
+    }
 }
 
 ////////////////////////////////////////// MODEL SIMULATION //////////////////////////////////////////////
 
+int StateRacerMath::lutindex(float v, float x, float y) {
+    int vidx = (v + V_MAX) / (2 * V_MAX) * LUT_V_RES;
+    bool vidx_ok = vidx >= 0 && vidx < LUT_V_RES;
+    int xidx = (x + X_MAX) / (2 * X_MAX) * LUT_X_RES;
+    bool xidx_ok = xidx >= 0 && xidx < LUT_X_RES;
+    int yidx = (y + Y_MAX) / (2 * Y_MAX) * LUT_Y_RES;
+    bool yidx_ok = yidx >= 0 && yidx < LUT_Y_RES;
+    int idx = vidx * LUT_X_RES * LUT_Y_RES
+            + xidx * LUT_Y_RES
+            + yidx;
+    return vidx_ok && xidx_ok && yidx_ok ? idx : -1;
+}
+
 void StateRacerMath::generateStateTransitionLUT() {
-    // do forward simulations of the model, iterating over starting states and possible internal control inputs
+    // do forward simulations of the model, iterating over starting states and possible internal control input
     // to generate a map of output states vs. input states.
     // the main RRT loop will use this map to figure out if two states are connectable, and what the cost is.
 
-    for (float vi = 0; vi < max_velocity; vi += max_velocity / velocity_steps) {
+    StateRacer final;
 
+    delete [] lut;
+    lut = new ModelRacerEdgeCost[LUT_V_RES * LUT_X_RES * LUT_Y_RES];
+
+    for (float vi = 0; vi < V_MAX; vi += V_MAX / V_STEPS) {
+        for (float accel = -1; accel < 1; accel += 2.0f / A_STEPS) {
+            float gas = accel > 0 ? accel : 0;
+            float brake = accel < 0 ? -accel : 0;
+            for (float steering = -1; steering < 1; steering += 2.0f / S_STEPS) {
+                model->reset();
+                model->setInitialState(vi);
+                model->setControls(gas, brake, steering);
+                float dt = T_MAX / T_STEPS;
+                for (float t=0; t<T_MAX; t+= dt) {
+                    model->run(dt);
+                    model->getState(&final);
+                    int idx = lutindex(final.v, final.x, final.y);
+                    if (idx != -1) {
+                        ModelRacerEdgeCost *cost = &lut[idx];
+                        cost->brake = brake;
+                        cost->gas = gas;
+                        cost->steering = steering;
+                        cost->dt = t;
+                        cost->vf = final.v;
+                        cost->hf = final.h;
+                        cost->cost = t; // cost function is time
+                    }
+                }
+            }
+        }
     }
+
+    // todo: fill in gaps in the table???
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
@@ -76,7 +146,7 @@ void StateRacerMath::setRandomStateConstraints(StateRacer _minimums, StateRacer 
     // scale and shift are optimized to make getRandomState() fast
     scale.x = (maximums.x - minimums.x - 1) / RAND_MAX;
     scale.y = (maximums.y - minimums.y - 1) / RAND_MAX;
-    scale.v = max_velocity;
+    scale.v = V_MAX;
     scale.h = 360;
     shift.x = minimums.x;
     shift.y = minimums.y;

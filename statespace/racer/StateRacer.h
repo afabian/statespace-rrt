@@ -7,6 +7,7 @@ class StateRacer {
 
     friend class StateRacerMath;
     friend class MapRacer;
+    friend class ModelRacer;
 
 public:
     StateRacer();
