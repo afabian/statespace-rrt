@@ -85,4 +85,12 @@ add_executable(main_rrtgraphtest
         statespace/2d/State2DMath.cpp
         statespace/2d/State2DMath.h)
 
+add_executable(main_modelracertest
+        main_modelracertest.cpp
+        statespace/racer/ModelRacer.cpp
+        statespace/racer/ModelRacer.h
+        statespace/racer/StateRacer.cpp
+        statespace/racer/StateRacer.h
+        )
+
 target_link_libraries(main_rrtgraphtest ${PNG_LIBRARY})

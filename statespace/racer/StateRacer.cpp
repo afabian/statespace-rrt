@@ -55,7 +55,7 @@ std::string StateRacer::toString() {
            + "x=" + std::to_string(x) + ","
            + "y=" + std::to_string(y) + ","
            + "v=" + std::to_string(v) + ","
-           + "h=" + std::to_string(h) + ","
+           + "h=" + std::to_string(h)
            + std::string(")"));
 }
 
