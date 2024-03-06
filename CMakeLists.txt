@@ -49,6 +49,10 @@ add_executable(main
         statespace/racer/StateRacer.h
         statespace/racer/StateRacerMath.cpp
         statespace/racer/StateRacerMath.h
+        statespace/racer/StateRacerMathVis.cpp
+        statespace/racer/StateRacerMathVis.h
+        statespace/racer/ModelRacer.cpp
+        statespace/racer/ModelRacer.h
         motion/Motion1DInterfaceSingle.h
         motion/Motion1DInterfaceDouble.h
         motion/Motion1DPositionVelocitySingle.cpp
@@ -67,8 +71,6 @@ add_executable(main
         motion/Motion1DPositionVelocityAccelSingleTimed.h
         motion/Motion1DPositionVelocityAccelDoubleTimed.cpp
         motion/Motion1DPositionVelocityAccelDoubleTimed.h
-        statespace/racer/ModelRacer.cpp
-        statespace/racer/ModelRacer.h
 )
 
 target_link_libraries(main ${PNG_LIBRARY})

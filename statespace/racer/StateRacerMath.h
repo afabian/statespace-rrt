@@ -4,20 +4,13 @@
 #include "StateRacer.h"
 #include "MapRacer.h"
 #include "ModelRacer.h"
+#include "ModelRacerEdgeCost.h"
+#include "StateRacerMathVis.h"
+#include <string>
 
 // Racer is a top-down racing game solver, where the car can accelerate, brake, coast, go straight or left or right.
 
 class MapRacer;
-
-struct ModelRacerEdgeCost {
-    float cost;
-    float gas;
-    float brake;
-    float steering;
-    float dt;
-    float vf;
-    float hf;
-};
 
 class StateRacerMath {
 
@@ -30,6 +23,8 @@ public:
     void setSteps(int _V_STEPS, int _A_STEPS, int _S_STEPS, int _T_STEPS);
 
     void setModel(ModelRacer* _model);
+
+    void setVis(std::string outputPath);
 
     bool pointInObstacle(StateRacer* point);
     bool edgeInObstacle(StateRacer* source, StateRacer* dest);
@@ -72,6 +67,8 @@ protected:
     int lutindex(float v, float x, float y);
 
     ModelRacerEdgeCost* lut = nullptr;
+
+    StateRacerMathVis vis;
 };
 
 #endif

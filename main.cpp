@@ -101,21 +101,22 @@ void main_floater() {
 }
 
 void main_racer() {
-    MapRacer map("maps/racer/racer.png");
-    ModelRacer model(1, 1, 1, 0.1, 0.0001);
+    MapRacer map("maps/racer/lagunaseca.png");
+    ModelRacer model(150, 30, 1, 0.1, 0.0012, 0.001);
     StateRacerMath state_math;
     state_math.setMax(10, 10, 100, 100);
-    state_math.setRes(100, 100, 100);
+    state_math.setRes(10, 50, 50);
     state_math.setSteps(100, 100, 100, 100);
     state_math.setModel(&model);
+    state_math.setVis("output/racer/math/");
     RRT<StateRacer,StateRacerMath,MapRacer> rrt(&map, &state_math);
-    StateRacer start{0, 50, 550, 0, 0};
-    StateRacer goal(0, 950, 50, 0, 0);
+    StateRacer start{0, 350, 700, 0, 0};
+    StateRacer goal(0, 390, 700, 0, 0);
     rrt.setStartState(&start);
     rrt.setGoalState(&goal, 0.1);
     rrt.configureSampling(20001, false);
     rrt.configureRewiring(true, 0.05, 2);
-    rrt.configureDebugOutput(true, true, "output/racer/", 0, 0);
+    rrt.configureDebugOutput(true, true, "output/racer/rrt/", 0, 0);
     rrt.run();
     cout << "Racer: Final path cost: " << rrt.getGoalCost() << endl;
 }
