@@ -102,11 +102,11 @@ void main_floater() {
 
 void main_racer() {
     MapRacer map("maps/racer/lagunaseca.png");
-    ModelRacer model(150, 30, 1, 0.1, 0.0012, 0.001);
+    ModelRacer model(150, 30, 2, 0.1, 0.0012, 0.001);
     StateRacerMath state_math;
-    state_math.setMax(10, 10, 100, 100);
-    state_math.setRes(10, 50, 50);
-    state_math.setSteps(100, 100, 100, 100);
+    state_math.setMax(40, 3, 100, 100);
+    state_math.setRes(10, 1000, 1000);
+    state_math.setSteps(50, 50, 50, 50);
     state_math.setModel(&model);
     state_math.setVis("output/racer/math/");
     RRT<StateRacer,StateRacerMath,MapRacer> rrt(&map, &state_math);

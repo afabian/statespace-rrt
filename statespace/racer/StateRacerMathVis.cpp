@@ -30,7 +30,7 @@ void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres,
     for (int v=0; v<vres; v++) {
 
         // paint the x-y picture
-        for (int x=0; x<xres; v++) {
+        for (int x=0; x<xres; x++) {
             for (int y=0; y<yres; y++) {
                 float cost = lut[lutindex(v,x,y)].cost;
                 png_bytep row = vis_rows[y];
