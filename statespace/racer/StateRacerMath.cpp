@@ -52,7 +52,7 @@ void StateRacerMath::setVis(std::string outputPath) {
 ////////////////////////////////////////// MODEL SIMULATION //////////////////////////////////////////////
 
 int StateRacerMath::lutindex(float v, float x, float y) {
-    int vidx = (v + V_MAX) / (2 * V_MAX) * LUT_V_RES;
+    int vidx = v / V_MAX * LUT_V_RES;
     bool vidx_ok = vidx >= 0 && vidx < LUT_V_RES;
     int xidx = (x + X_MAX) / (2 * X_MAX) * LUT_X_RES;
     bool xidx_ok = xidx >= 0 && xidx < LUT_X_RES;
@@ -105,7 +105,7 @@ void StateRacerMath::generateStateTransitionLUT() {
     // todo: fill in gaps in the table???
 
     // Visualize
-    vis.renderLUT(lut, LUT_V_RES, LUT_X_RES, LUT_Y_RES);
+    vis.renderLUT(lut, LUT_V_RES, LUT_X_RES, LUT_Y_RES, V_MAX);
 
     // is LUT complete?
 

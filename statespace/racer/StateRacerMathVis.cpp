@@ -1,3 +1,4 @@
+#include <cmath>
 #include "StateRacerMathVis.h"
 #include "Utils.h"
 
@@ -7,12 +8,13 @@ void StateRacerMathVis::setOutputPath(std::string _outputPath) {
     configured = true;
 }
 
-void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres, int _yres) {
+void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres, int _yres, float _vmax) {
     if (!configured) return;
 
     vres = _vres;
     xres = _xres;
     yres = _yres;
+    vmax = _vmax;
 
     // allocate memory for the image
     vis_rows = (png_bytep*)malloc(sizeof(png_bytep) * yres);
@@ -27,31 +29,32 @@ void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres,
     }
 
     // for each velocity
-    for (int v=0; v<vres; v++) {
+    for (int vidx=0; vidx < vres; vidx++) {
 
         // paint the x-y picture
-        for (int x=0; x<xres; x++) {
-            for (int y=0; y<yres; y++) {
-                float cost = lut[lutindex(v,x,y)].cost;
-                png_bytep row = vis_rows[y];
+        for (int xidx=0; xidx < xres; xidx++) {
+            for (int yidx=0; yidx < yres; yidx++) {
+                float cost = lut[lutindex(vidx, xidx, yidx)].cost;
+                png_bytep row = vis_rows[yidx];
                 if (cost > 0) {
                     int value = cost / max_cost * 255;
-                    row[x * 4 + 0] = value;
-                    row[x * 4 + 1] = value;
-                    row[x * 4 + 2] = 128;
-                    row[x * 4 + 3] = 255;
+                    row[xidx * 4 + 0] = value;
+                    row[xidx * 4 + 1] = value;
+                    row[xidx * 4 + 2] = 128;
+                    row[xidx * 4 + 3] = 255;
                 }
                 else {
-                    row[x * 4 + 0] = 0;
-                    row[x * 4 + 1] = 0;
-                    row[x * 4 + 2] = 0;
-                    row[x * 4 + 3] = 255;
+                    row[xidx * 4 + 0] = 0;
+                    row[xidx * 4 + 1] = 0;
+                    row[xidx * 4 + 2] = 0;
+                    row[xidx * 4 + 3] = 255;
                 }
             }
         }
 
         // write out image
-        write_png(outputPath + "lut_v" + std::to_string(v));
+        float v = vidx * vmax / vres;
+        write_png(outputPath + "lut_v" + std::to_string((int)floor(v)));
     }
 
 }

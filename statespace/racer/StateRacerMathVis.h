@@ -9,7 +9,7 @@ class StateRacerMathVis {
 
 public:
     void setOutputPath(std::string _outputPath);
-    void renderLUT(ModelRacerEdgeCost lut[], int vres, int xres, int yres);
+    void renderLUT(ModelRacerEdgeCost lut[], int vres, int xres, int yres, float vmax);
 
 private:
     int lutindex(int v, int x, int y);
@@ -21,6 +21,7 @@ private:
     int vres = 0;
     int xres = 0;
     int yres = 0;
+    float vmax = 0;
     png_bytep *vis_rows = NULL;
 
 };
