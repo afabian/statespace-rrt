@@ -28,39 +28,42 @@ void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres,
         if (lut[i].cost > max_cost) max_cost = lut[i].cost;
     }
 
-    // for each velocity
-    for (int vidx=0; vidx < vres; vidx++) {
+    // for each (v0, vf) pair
+    for (int v0idx=0; v0idx < vres; v0idx++) {
+        for (int vfidx=0; vfidx < vres; vfidx++) {
 
-        // paint the x-y picture
-        for (int xidx=0; xidx < xres; xidx++) {
-            for (int yidx=0; yidx < yres; yidx++) {
-                float cost = lut[lutindex(vidx, xidx, yidx)].cost;
-                png_bytep row = vis_rows[yidx];
-                if (cost > 0) {
-                    int value = cost / max_cost * 255;
-                    row[xidx * 4 + 0] = value;
-                    row[xidx * 4 + 1] = value;
-                    row[xidx * 4 + 2] = 128;
-                    row[xidx * 4 + 3] = 255;
-                }
-                else {
-                    row[xidx * 4 + 0] = 0;
-                    row[xidx * 4 + 1] = 0;
-                    row[xidx * 4 + 2] = 0;
-                    row[xidx * 4 + 3] = 255;
+            // paint the x-y picture
+            for (int xidx = 0; xidx < xres; xidx++) {
+                for (int yidx = 0; yidx < yres; yidx++) {
+                    float cost = lut[lutindex(v0idx, vfidx, xidx, yidx)].cost;
+                    png_bytep row = vis_rows[yidx];
+                    if (cost > 0) {
+                        int value = cost / max_cost * 255;
+                        row[xidx * 4 + 0] = value;
+                        row[xidx * 4 + 1] = value;
+                        row[xidx * 4 + 2] = 128;
+                        row[xidx * 4 + 3] = 255;
+                    } else {
+                        row[xidx * 4 + 0] = 0;
+                        row[xidx * 4 + 1] = 0;
+                        row[xidx * 4 + 2] = 0;
+                        row[xidx * 4 + 3] = 255;
+                    }
                 }
             }
-        }
 
-        // write out image
-        float v = vidx * vmax / vres;
-        write_png(outputPath + "lut_v" + std::to_string((int)floor(v)));
+            // write out image
+            float v0 = v0idx * vmax / vres;
+            float vf = vfidx * vmax / vres;
+            write_png(outputPath + "lut_v" + std::to_string((int) floor(v0)) + "_to_v" + std::to_string((int) floor(vf)));
+        }
     }
 
 }
 
-int StateRacerMathVis::lutindex(int v, int x, int y) {
-    int idx = v * xres * yres
+int StateRacerMathVis::lutindex(int v0, int vf, int x, int y) {
+    int idx = v0 * vres * xres * yres
+              + vf * xres * yres
               + x * yres
               + y;
     return idx;

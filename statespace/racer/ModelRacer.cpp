@@ -56,8 +56,8 @@ void ModelRacer::run(float dt) {
         state.v -= fabsf(steering) * steering_strength * steering_friction * state.v * dt_now;
 
         // position
-        state.x += state.v * cos(state.h) * dt_now;
-        state.y += state.v * sin(state.h) * dt_now;
+        state.x += state.v * sin(state.h) * dt_now;
+        state.y += state.v * -1 * cos(state.h) * dt_now;
 
         // time
         state.t += dt_now;

@@ -64,7 +64,7 @@ protected:
     int S_STEPS = 100;
     int T_STEPS = 100;
 
-    int lutindex(float v, float x, float y);
+    int lutindex(float v0, float vf, float x, float y);
 
     ModelRacerEdgeCost* lut = nullptr;
 

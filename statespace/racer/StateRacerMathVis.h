@@ -12,7 +12,7 @@ public:
     void renderLUT(ModelRacerEdgeCost lut[], int vres, int xres, int yres, float vmax);
 
 private:
-    int lutindex(int v, int x, int y);
+    int lutindex(int v0, int vf, int x, int y);
     void write_png(std::string filename_prefix);
 
     std::string outputPath = "";

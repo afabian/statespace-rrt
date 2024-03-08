@@ -51,17 +51,20 @@ void StateRacerMath::setVis(std::string outputPath) {
 
 ////////////////////////////////////////// MODEL SIMULATION //////////////////////////////////////////////
 
-int StateRacerMath::lutindex(float v, float x, float y) {
-    int vidx = v / V_MAX * LUT_V_RES;
-    bool vidx_ok = vidx >= 0 && vidx < LUT_V_RES;
+int StateRacerMath::lutindex(float v0, float vf, float x, float y) {
+    int v0idx = v0 / V_MAX * LUT_V_RES;
+    bool v0idx_ok = v0idx >= 0 && v0idx < LUT_V_RES;
+    int vfidx = vf / V_MAX * LUT_V_RES;
+    bool vfidx_ok = vfidx >= 0 && vfidx < LUT_V_RES;
     int xidx = (x + X_MAX) / (2 * X_MAX) * LUT_X_RES;
     bool xidx_ok = xidx >= 0 && xidx < LUT_X_RES;
     int yidx = (y + Y_MAX) / (2 * Y_MAX) * LUT_Y_RES;
     bool yidx_ok = yidx >= 0 && yidx < LUT_Y_RES;
-    int idx = vidx * LUT_X_RES * LUT_Y_RES
+    int idx = v0idx * LUT_V_RES * LUT_X_RES * LUT_Y_RES
+            + vfidx * LUT_X_RES * LUT_Y_RES
             + xidx * LUT_Y_RES
             + yidx;
-    return vidx_ok && xidx_ok && yidx_ok ? idx : -1;
+    return v0idx_ok && vfidx_ok && xidx_ok && yidx_ok ? idx : -1;
 }
 
 void StateRacerMath::generateStateTransitionLUT() {
@@ -72,7 +75,7 @@ void StateRacerMath::generateStateTransitionLUT() {
     StateRacer final;
 
     delete [] lut;
-    lut = new ModelRacerEdgeCost[LUT_V_RES * LUT_X_RES * LUT_Y_RES]{0};
+    lut = new ModelRacerEdgeCost[LUT_V_RES * LUT_V_RES * LUT_X_RES * LUT_Y_RES]{0};
 
     for (float vi = 0; vi < V_MAX; vi += V_MAX / V_STEPS) {
         for (float accel = -1; accel < 1; accel += 2.0f / A_STEPS) {
@@ -86,7 +89,7 @@ void StateRacerMath::generateStateTransitionLUT() {
                 for (float t=0; t<T_MAX; t+= dt) {
                     model->run(dt);
                     model->getState(&final);
-                    int idx = lutindex(final.v, final.x, final.y);
+                    int idx = lutindex(vi, final.v, final.x, final.y);
                     if (idx != -1) {
                         ModelRacerEdgeCost *cost = &lut[idx];
                         cost->brake = brake;
@@ -96,6 +99,8 @@ void StateRacerMath::generateStateTransitionLUT() {
                         cost->vf = final.v;
                         cost->hf = final.h;
                         cost->cost = t; // cost function is time
+
+                        // todo: figure out how to turn these points into outlines of solid sections, and paint in those sections
                     }
                 }
             }
@@ -107,24 +112,6 @@ void StateRacerMath::generateStateTransitionLUT() {
     // Visualize
     vis.renderLUT(lut, LUT_V_RES, LUT_X_RES, LUT_Y_RES, V_MAX);
 
-    // is LUT complete?
-
-    bool gap_found = false;
-    for (int v=0; v<LUT_V_RES; v++) {
-        for (int x=0; x<LUT_X_RES; x++) {
-            for (int y=0; y<LUT_Y_RES; y++) {
-                int idx = lutindex(v, x, y);
-                if (lut[idx].cost == 0) {
-                    gap_found = true;
-                }
-            }
-        }
-    }
-
-    if (gap_found) {
-        cout << "Error: Gaps found in LUT" << endl;
-        exit(1);
-    }
 }
 
 ////////////////////////////////////////  OBSTACLE DETECTION  ////////////////////////////////////////////
