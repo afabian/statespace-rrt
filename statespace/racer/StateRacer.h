@@ -12,16 +12,15 @@ class StateRacer {
 public:
     StateRacer();
     StateRacer(double _x, double _y);
-    StateRacer(double _t, double _x, double _y, double _v, double _h);
+    StateRacer(double _x, double _y, double _v, double _h);
     StateRacer get();
     void set(StateRacer source);
     void set(StateRacer* source);
-    void set(double _t, double _x, double _y, double _v, double _h);
+    void set(double _x, double _y, double _v, double _h);
     std::string toString();
     bool operator==(const StateRacer &other);
 
 protected:
-    double t;
     double x;
     double y;
     double v;

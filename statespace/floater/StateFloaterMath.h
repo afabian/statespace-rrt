@@ -25,7 +25,7 @@ public:
     bool pointInObstacle(StateFloater* point);
     bool edgeInObstacle(StateFloater* source, StateFloater* dest);
 
-    float edgeCost(StateFloater* source, StateFloater* dest);
+    float edgeCost(StateFloater* source, StateFloater* dest, StateFloater* dest_updated=nullptr);
 
     void edgePath(StateFloater *source, StateFloater *dest, float t[], float p[], float a[], float pointCount);
 

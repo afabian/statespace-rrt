@@ -57,7 +57,7 @@ float State2DElevationMath::pointCost(State2D *point, float heading) {
     }
 }
 
-float State2DElevationMath::edgeCost(State2D *pointA, State2D *pointB) {
+float State2DElevationMath::edgeCost(State2D *pointA, State2D *pointB, State2D *pointB_updated) {
     float sum = 0;
     State2D diff(pointB->x - pointA->x, pointB->y - pointA->y);
     int iterations = 0;
@@ -67,6 +67,9 @@ float State2DElevationMath::edgeCost(State2D *pointA, State2D *pointB) {
         State2D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
         sum += pointCost(&point, heading);
         iterations++;
+    }
+    if (pointB_updated != nullptr) {
+        *pointB_updated = *pointB;
     }
     return iterations == 0 ? 0 : sum / iterations * length;
 }

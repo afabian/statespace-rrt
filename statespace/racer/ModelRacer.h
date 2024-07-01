@@ -13,6 +13,7 @@ public:
     ModelRacer(float _gas_strength, float _brake_strength, float _steering_strength, float _steering_friction, float _air_strength, float _dt_internal);
     void reset();
     void setInitialState(float vi);
+    void setInitialState(StateRacer* _state);
     void setControls(float _gas, float _brake, float _steering);
     void run(float dt);
     void getState(StateRacer* _state);

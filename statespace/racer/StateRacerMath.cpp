@@ -36,6 +36,7 @@ void StateRacerMath::setMap(MapRacer *_map) {
     if (model != nullptr && map != nullptr) {
         generateStateTransitionLUT();
     }
+    map->setStateRacerMath(this);
 }
 
 void StateRacerMath::setModel(ModelRacer *_model) {
@@ -51,31 +52,32 @@ void StateRacerMath::setVis(std::string outputPath) {
 
 ////////////////////////////////////////// MODEL SIMULATION //////////////////////////////////////////////
 
-int StateRacerMath::lutindex(float v0, float vf, float x, float y) {
-    int v0idx = v0 / V_MAX * LUT_V_RES;
+int StateRacerMath::lutindex(float v0, float dforwardf, float drightf) {
+    int v0idx = int(v0 / V_MAX * float(LUT_V_RES));
     bool v0idx_ok = v0idx >= 0 && v0idx < LUT_V_RES;
-    int vfidx = vf / V_MAX * LUT_V_RES;
-    bool vfidx_ok = vfidx >= 0 && vfidx < LUT_V_RES;
-    int xidx = (x + X_MAX) / (2 * X_MAX) * LUT_X_RES;
-    bool xidx_ok = xidx >= 0 && xidx < LUT_X_RES;
-    int yidx = (y + Y_MAX) / (2 * Y_MAX) * LUT_Y_RES;
-    bool yidx_ok = yidx >= 0 && yidx < LUT_Y_RES;
-    int idx = v0idx * LUT_V_RES * LUT_X_RES * LUT_Y_RES
-            + vfidx * LUT_X_RES * LUT_Y_RES
-            + xidx * LUT_Y_RES
-            + yidx;
-    return v0idx_ok && vfidx_ok && xidx_ok && yidx_ok ? idx : -1;
+
+    int dforwardidx = int((dforwardf + X_MAX) / (2 * X_MAX) * float(LUT_X_RES));
+    bool dforwardidx_ok = dforwardidx >= 0 && dforwardidx < LUT_X_RES;
+
+    int drightidx = int((drightf + Y_MAX) / (2 * Y_MAX) * float(LUT_Y_RES));
+    bool drightidx_ok = drightidx >= 0 && drightidx < LUT_Y_RES;
+
+    int idx = v0idx * LUT_X_RES * LUT_Y_RES
+            + dforwardidx * LUT_Y_RES
+            + drightidx;
+
+    return v0idx_ok && dforwardidx_ok && drightidx_ok ? idx : -1;
 }
 
 void StateRacerMath::generateStateTransitionLUT() {
     // do forward simulations of the model, iterating over starting states and possible internal control input
     // to generate a map of output states vs. input states.
     // the main RRT loop will use this map to figure out if two states are connectable, and what the cost is.
-
-    StateRacer final;
+    // the table is time, position, and heading invariant, so it looks up data based on initial velocity and final relative position
+    // when an entry is found, that entry will provide the final velocity and relative heading
 
     delete [] lut;
-    lut = new ModelRacerEdgeCost[LUT_V_RES * LUT_V_RES * LUT_X_RES * LUT_Y_RES]{0};
+    lut = new ModelRacerEdgeCost[LUT_V_RES * LUT_X_RES * LUT_Y_RES]{0};
 
     for (float vi = 0; vi < V_MAX; vi += V_MAX / V_STEPS) {
         for (float accel = -1; accel < 1; accel += 2.0f / A_STEPS) {
@@ -88,8 +90,9 @@ void StateRacerMath::generateStateTransitionLUT() {
                 float dt = T_MAX / T_STEPS;
                 for (float t=0; t<T_MAX; t+= dt) {
                     model->run(dt);
+                    StateRacer final;
                     model->getState(&final);
-                    int idx = lutindex(vi, final.v, final.x, final.y);
+                    int idx = lutindex(vi, final.x, final.y);
                     if (idx != -1) {
                         ModelRacerEdgeCost *cost = &lut[idx];
                         cost->brake = brake;
@@ -121,28 +124,88 @@ bool StateRacerMath::pointInObstacle(StateRacer *point) {
 }
 
 bool StateRacerMath::edgeInObstacle(StateRacer *source, StateRacer *dest) {
-    StateRacer diff(dest->x - source->x, dest->y - source->y);
-    float step = EDGE_WALK_SCALE / hypotf(diff.x, diff.y);
-    for (float progress = 0; progress < 1; progress += step) {
-        StateRacer point(source->x + diff.x * progress, source->y + diff.y * progress);
-        if (pointInObstacle(&point)) {
-            return true;
+
+    if (source == dest) return false;
+
+    int dist = max(2, int(hypotf(dest->x - source->x, dest->y - source->y) * EDGE_WALK_SCALE));
+    StateRacer* points = (StateRacer*)malloc(sizeof(StateRacer) * dist);
+    bool path_found = edgePath(source, dest, points, dist);
+
+    if (!path_found) return true;
+
+    bool found = false;
+    for (int i=0; i<dist; i++) {
+        if (pointInObstacle(&points[i])) {
+            found = true;
+            break;
         }
     }
-    return false;
+
+    free(points);
+
+    return found;
 }
 
 /////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
 
-float StateRacerMath::edgeCost(StateRacer *source, StateRacer *dest) {
+ModelRacerEdgeCost* StateRacerMath::edgeCostObj(StateRacer *source, StateRacer *dest) {
+    // tranform this segment so that it's origin is (0, 0) and its initial heading is 0
+    // then look up the segment in the LUT
+
+    float heading = atan2(dest->x - source->x, dest->y - source->y);
+    float dHeading = heading - source->h;
+
+    double dx = dest->x - source->x;
+    double dy = dest->y - source->y;
+    double dist = hypot(dx, dy);
+
+    StateRacer dest_relative_to_origin;
+    dest_relative_to_origin.x = dist * sin(dHeading);
+    dest_relative_to_origin.y = dist * cos(dHeading);
+
+    int idx = lutindex(source->v, dest_relative_to_origin.x, dest_relative_to_origin.y);
+
+    if (idx == -1) return nullptr;
+    if (lut[idx].cost == 0) return nullptr;
+    return &lut[idx];
 }
 
-void StateRacerMath::edgePath(StateRacer *source, StateRacer *dest, float t[], float p[], float a[], float pointCount) {
+float StateRacerMath::edgeCost(StateRacer *source, StateRacer *dest, StateRacer *dest_updated) {
+    ModelRacerEdgeCost* obj = edgeCostObj(source, dest);
+    float output = INFINITY;
+    if (obj) {
+        float heading = atan2f(dest->x - source->x, dest->y - source->y);
+        output= obj->cost;
+        if (dest_updated != nullptr) {
+            *dest_updated = *dest;
+            dest_updated->v = obj->vf;
+            dest_updated->h = obj->hf + heading;
+        }
+    }
+    return output;
+}
+
+bool StateRacerMath::edgePath(StateRacer *source, StateRacer *dest, StateRacer p[], int pointCount) {
+    ModelRacerEdgeCost* obj = edgeCostObj(source, dest);
+    if (obj) {
+        model->reset();
+        model->setInitialState(source);
+        model->setControls(obj->gas, obj->brake, obj->steering);
+        float dt = obj->cost / float(pointCount);
+        for (int i = 0; i < pointCount; i++) {
+            model->run(dt);
+            model->getState(&p[i]);
+        }
+    }
+    return obj != nullptr;
 }
 
 ///////////////////////////////////////  DISTANCE CALCULATIONS  //////////////////////////////////////////
 
 double StateRacerMath::distance(StateRacer *source, StateRacer *dest) {
+    // TODO: This is just a position distance, doesn't consider if vel+hdg make path possible or not
+    // augment or replace with edgeCost() ???
+
     double dx = source->x - dest->x;
     double dy = source->y - dest->y;
     double dist = hypot(dx, dy);
@@ -159,21 +222,25 @@ void StateRacerMath::setRandomStateConstraints(StateRacer _minimums, StateRacer 
     minimums = _minimums;
     maximums = _maximums;
     // scale and shift are optimized to make getRandomState() fast
+    // scale should always be divided by RAND_MAX to prepare for rand() being used as an input in getRandomState()
     scale.x = (maximums.x - minimums.x - 1) / RAND_MAX;
     scale.y = (maximums.y - minimums.y - 1) / RAND_MAX;
-    scale.v = V_MAX;
-    scale.h = 360;
+    scale.v = V_MAX  / RAND_MAX;
+    scale.h = M_PI * 2  / RAND_MAX;
     shift.x = minimums.x;
     shift.y = minimums.y;
     shift.v = 0;
-    shift.h = 0;
+    shift.h = -M_PI;
 }
 
 StateRacer StateRacerMath::getRandomState() {
     StateRacer output;
     output.x = (double)rand() * scale.x + shift.x;
     output.y = (double)rand() * scale.y + shift.y;
-    output.v = (double)rand() * scale.v + shift.v;
-    output.h = (double)rand() * scale.h + shift.h;
+    // V and H aren't generated for the sample, because our algorithm here is to generate x-y samples and then if they can be connected to a node by any V/H settings, use those
+    //output.v = (double)rand() * scale.v + shift.v;
+    //output.h = (double)rand() * scale.h + shift.h;
+    output.v = 0;
+    output.h = 0;
     return output;
 }

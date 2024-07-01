@@ -35,6 +35,7 @@ public:
     void renderVis(std::string filename_prefix);
     void takeScreenshot(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
+    void addDebugText(std::string text);
 
 protected:
     void write_video(std::string filename_prefix);

@@ -2,14 +2,13 @@
 #define RRT_OUTPUT_CPP
 
 #include "RRT.h"
-#include "Utils.h"
+#include "utils.h"
 
 template<class State, class StateMath, class Map>
 void RRT<State, StateMath, Map>::configureDebugOutput(bool _sampling, bool _rewire, std::string _filename_prefix, int width, int height) {
     sampling_output_enabled = _sampling;
     rewire_output_enabled = _rewire;
     debug_output_prefix = _filename_prefix;
-    map->configureVis(width, height);
     mkpath(debug_output_prefix.c_str(), S_IRWXU);
 }
 
@@ -23,7 +22,7 @@ void RRT<State, StateMath, Map>::renderVis() {
     Node<State>* node = graph.first();
     while (node != nullptr) {
         if (node->parent != nullptr) {
-            map->addVisLine(&node->parent->state, &node->state, 0x0000bbbb);
+            map->addVisLine(&node->parent->state, &node->state, 0xffffffff);
         }
         node = node->next;
     }
@@ -53,10 +52,12 @@ void RRT<State, StateMath, Map>::renderVis() {
         node = &goal;
         while (node != start) {
             node = node->parent;
-            std::cout << node->state.toString() << std::endl;
+            std::cout << "Cost=" << node->cost << ", Node=" << node->state.toString() << std::endl;
         }
     }
 
+    // print debug text
+    map->addDebugText(debugText);
 }
 
 template<class State, class StateMath, class Map>
@@ -67,6 +68,16 @@ std::string RRT<State, StateMath, Map>::getDebugText() {
 template<class State, class StateMath, class Map>
 float RRT<State, StateMath, Map>::getGoalCost() {
     return goal.cost;
+}
+
+template<class State, class StateMath, class Map>
+void RRT<State, StateMath, Map>::clearDebugBuffer() {
+    debugText = "";
+}
+
+template<class State, class StateMath, class Map>
+void RRT<State, StateMath, Map>::addDebugText(std::string text) {
+    debugText += text + "\n";
 }
 
 #endif

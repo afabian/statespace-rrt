@@ -5,6 +5,8 @@
 #include <string>
 #include <png.h>
 
+class StateRacerMath;
+
 class StateRacerMathVis {
 
 public:
@@ -12,8 +14,8 @@ public:
     void renderLUT(ModelRacerEdgeCost lut[], int vres, int xres, int yres, float vmax);
 
 private:
-    int lutindex(int v0, int vf, int x, int y);
     void write_png(std::string filename_prefix);
+    int lutindex(int v0idx, int dforwardidx, int drightidx);
 
     std::string outputPath = "";
     bool configured = false;

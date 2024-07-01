@@ -101,6 +101,9 @@ void MapFloater::addGoalDetail(StateFloater *source, StateFloater *dest) {
     free(t);
 }
 
+void MapFloater::addDebugText(std::string text) {
+}
+
 void MapFloater::add_state_display(StateFloater state) {
 
     unsigned int color = 0x00ff0000;

@@ -23,6 +23,7 @@ public:
     void renderVis(std::string filename_prefix);
     void renderFinalVis(std::string filename_prefix);
     float getGrayscalePixel(int width_pos, int height_pos);
+    void addDebugText(std::string text);
 
 private:
     void load_png(std::string pngfile);

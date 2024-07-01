@@ -29,9 +29,10 @@ public:
     bool pointInObstacle(StateRacer* point);
     bool edgeInObstacle(StateRacer* source, StateRacer* dest);
 
-    float edgeCost(StateRacer* source, StateRacer* dest);
+    ModelRacerEdgeCost* edgeCostObj(StateRacer* source, StateRacer* dest);
+    float edgeCost(StateRacer* source, StateRacer* dest, StateRacer* dest_updated=nullptr);
 
-    void edgePath(StateRacer *source, StateRacer *dest, float t[], float p[], float a[], float pointCount);
+    bool edgePath(StateRacer *source, StateRacer *dest, StateRacer p[], int pointCount);
 
     double distance(StateRacer* source, StateRacer* dest);
     double approx_distance(StateRacer* source, StateRacer* dest);
@@ -39,13 +40,15 @@ public:
     void setRandomStateConstraints(StateRacer _minimums, StateRacer _maximums);
     StateRacer getRandomState();
 
+    int lutindex(float v0, float dforwardf, float drightf);
+
 protected:
     void generateStateTransitionLUT();
 
     StateRacer minimums, maximums;
     StateRacer scale, shift;
 
-    const float EDGE_WALK_SCALE = 1.0f;
+    const float EDGE_WALK_SCALE = 0.1f;
 
     MapRacer* map = nullptr;
     ModelRacer* model = nullptr;
@@ -63,8 +66,6 @@ protected:
     int A_STEPS = 100;
     int S_STEPS = 100;
     int T_STEPS = 100;
-
-    int lutindex(float v0, float vf, float x, float y);
 
     ModelRacerEdgeCost* lut = nullptr;
 

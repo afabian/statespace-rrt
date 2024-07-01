@@ -48,7 +48,7 @@ bool StateFloaterMath::edgeInObstacle(StateFloater *source, StateFloater *dest) 
 
 /////////////////////////////////////////  COST CALCULATIONS  ////////////////////////////////////////////
 
-float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
+float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest, StateFloater *dest_updated) {
 
     // check for impossible scenarios and return an infinite cost
 
@@ -83,6 +83,10 @@ float StateFloaterMath::edgeCost(StateFloater *source, StateFloater *dest) {
     float problem_time = dest->t - source->t;
     float time_ratio = problem_time == 0 ? 0 : solution_time / problem_time;
     if (time_ratio > 1.01f || time_ratio < 0.99f) ai = INFINITY;
+
+    if (dest_updated != nullptr) {
+        *dest_updated = *dest;
+    }
 
     return ai;
 }

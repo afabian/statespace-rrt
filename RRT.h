@@ -22,6 +22,8 @@ public:
     void initRandomSamples();
     void addRandomSample();
     void renderVis();
+    void clearDebugBuffer();
+    void addDebugText(std::string text);
     std::string getDebugText();
     float getGoalCost();
     void rewireAll();
@@ -36,6 +38,7 @@ private:
     void debugOutputSample(int iteration);
     void debugOutputRewire(int iteration);
 
+    std::string debugText = "";
     Map* map = nullptr;
     StateMath* state_math = nullptr;
 

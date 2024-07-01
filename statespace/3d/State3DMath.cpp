@@ -57,7 +57,7 @@ float State3DMath::pointCost(State3D *point) {
     return pointInObstacle(point) ? INFINITY : 1;
 }
 
-float State3DMath::edgeCost(State3D *pointA, State3D *pointB) {
+float State3DMath::edgeCost(State3D *pointA, State3D *pointB, State3D *pointB_updated) {
     float sum = 0;
     State3D diff(pointB->x - pointA->x, pointB->y - pointA->y, pointB->z - pointA->z);
     int iterations = 0;
@@ -66,6 +66,9 @@ float State3DMath::edgeCost(State3D *pointA, State3D *pointB) {
         State3D point(pointA->x + diff.x * progress, pointA->y + diff.y * progress, pointA->z + diff.z * progress);
         sum += pointCost(&point);
         iterations++;
+    }
+    if (pointB_updated != nullptr) {
+        *pointB_updated = *pointB;
     }
     return iterations == 0 ? 0 : sum / iterations * length;
 }

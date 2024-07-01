@@ -19,7 +19,7 @@ void RRT<State, StateMath, Map>::initRandomSamples() {
 
 template <class State, class StateMath, class Map>
 void RRT<State,StateMath,Map>::addRandomSample() {
-    State candidate;
+    State candidate, candidate_from_edge_calc;
     Node<State>* nearest = nullptr;
     Node<State>* newnode = nullptr;
 
@@ -29,18 +29,34 @@ void RRT<State,StateMath,Map>::addRandomSample() {
         nearest = getNearestNode(&candidate);
         if (nearest != nullptr) {
             if (!state_math->edgeInObstacle(&nearest->state, &candidate)) {
-                float cost = nearest->cost + state_math->edgeCost(&nearest->state, &candidate);
+                // edgeCost can modify candidate if it has parameters that are meant to be set after finding a solution.
+                // this is essentially part of the sampling process, but instead of sampling all random values, we sample
+                // some random values and then generate the rest based on a working solution.
+                // todo: does this indicate a problem?
+                float edgecost = state_math->edgeCost(&nearest->state, &candidate, &candidate_from_edge_calc);
+                float cost = nearest->cost + edgecost;
                 if ((cost < goal.cost || allow_costly_nodes) && cost < INFINITY) {
                     suitable_found = true;
-                    newnode = graph.addNode(&candidate, nearest, cost);
+                    newnode = graph.addNode(&candidate_from_edge_calc, nearest, cost);
+                    addDebugText("New Node Orig: " + candidate.toString());
+                    addDebugText("New Node Calc: " + candidate_from_edge_calc.toString());
+                    addDebugText("Neighbor: " + nearest->state.toString());
+                    addDebugText("Edge Cost: " + to_string(edgecost));
+                    addDebugText("Graph now has " + to_string(graph.size()) + " nodes");
+                    addDebugText("");
+
+
+
                     float goal_distance = state_math->distance(&newnode->state, &goal.state);
                     if (goal_distance < goal_distance_threshold) {
-                        float goal_cost = newnode->cost + state_math->edgeCost(&newnode->state, &goal.state);
-                        if (goal_cost < goal.cost) {
-                            goal.cost = goal_cost;
-                            goal.parent = newnode;
-                            if (!allow_costly_nodes) {
-                                delete_high_cost_nodes(goal.cost);
+                        if (!state_math->edgeInObstacle(&newnode->state, &goal.state)) {
+                            float goal_cost = newnode->cost + state_math->edgeCost(&newnode->state, &goal.state);
+                            if (goal_cost < goal.cost) {
+                                goal.cost = goal_cost;
+                                goal.parent = newnode;
+                                if (!allow_costly_nodes) {
+                                    delete_high_cost_nodes(goal.cost);
+                                }
                             }
                         }
                     }
@@ -101,6 +117,7 @@ void RRT<State, StateMath, Map>::debugOutputSample(int i) {
                 ) {
             renderVis();
             map->renderVis(debug_output_prefix + "/sample_" + to_string(i));
+            clearDebugBuffer();
         }
     }
 }

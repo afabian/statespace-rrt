@@ -7,8 +7,7 @@ StateRacer::StateRacer(double _x, double _y) {
     y = _y;
 }
 
-StateRacer::StateRacer(double _t, double _x, double _y, double _v, double _h) {
-    t = _t;
+StateRacer::StateRacer(double _x, double _y, double _v, double _h) {
     x = _x;
     y = _y;
     v = _v;
@@ -17,7 +16,6 @@ StateRacer::StateRacer(double _t, double _x, double _y, double _v, double _h) {
 
 StateRacer StateRacer::get() {
     StateRacer output;
-    output.t = t;
     output.x = x;
     output.y = y;
     output.v = v;
@@ -26,7 +24,6 @@ StateRacer StateRacer::get() {
 }
 
 void StateRacer::set(StateRacer source) {
-    t = source.t;
     x = source.x;
     y = source.y;
     v = source.v;
@@ -34,15 +31,13 @@ void StateRacer::set(StateRacer source) {
 }
 
 void StateRacer::set(StateRacer* source) {
-    t = source->t;
     x = source->x;
     y = source->y;
     v = source->v;
     h = source->h;
 }
 
-void StateRacer::set(double _t, double _x, double _y, double _v, double _h) {
-    t = _t;
+void StateRacer::set(double _x, double _y, double _v, double _h) {
     x = _x;
     y = _y;
     v = _v;
@@ -51,7 +46,6 @@ void StateRacer::set(double _t, double _x, double _y, double _v, double _h) {
 
 std::string StateRacer::toString() {
     return std::string(std::string("(")
-           + "t=" + std::to_string(t) + ","
            + "x=" + std::to_string(x) + ","
            + "y=" + std::to_string(y) + ","
            + "v=" + std::to_string(v) + ","
@@ -60,8 +54,7 @@ std::string StateRacer::toString() {
 }
 
 bool StateRacer::operator==(const StateRacer &other) {
-    return t == other.t
-        && x == other.x
+    return x == other.x
         && y == other.y
         && v == other.v
         && h == other.h

@@ -17,8 +17,8 @@ add_executable(main
         RRT_Sampling.cpp
         RRT_Output.cpp
         RRT.h
-        Utils.cpp
-        Utils.h
+        utils.cpp
+        utils.h
         statespace/2d/State2D.cpp
         statespace/2d/State2D.h
         statespace/2d/State2DMath.cpp
@@ -53,6 +53,7 @@ add_executable(main
         statespace/racer/StateRacerMathVis.h
         statespace/racer/ModelRacer.cpp
         statespace/racer/ModelRacer.h
+        statespace/racer/ModelRacerEdgeCost.h
         motion/Motion1DInterfaceSingle.h
         motion/Motion1DInterfaceDouble.h
         motion/Motion1DPositionVelocitySingle.cpp

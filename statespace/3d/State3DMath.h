@@ -17,7 +17,7 @@ public:
     bool edgeInObstacle(State3D* pointA, State3D* pointB);
 
     float pointCost(State3D* point);
-    float edgeCost(State3D* pointA, State3D* pointB);
+    float edgeCost(State3D* pointA, State3D* pointB, State3D* pointB_updated=nullptr);
 
     double distance(State3D* a, State3D* b);
     double approx_distance(State3D* a, State3D* b);

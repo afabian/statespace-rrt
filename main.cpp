@@ -101,20 +101,22 @@ void main_floater() {
 }
 
 void main_racer() {
-    MapRacer map("maps/racer/lagunaseca.png");
+    //MapRacer map("maps/racer/lagunaseca.png", 10, 0.25, 0, 0.5, 0.15);
+    MapRacer map("maps/racer/lagunaseca.png", 5, 0, 0, 0.5, 1);
+    map.configureVis(60);
     ModelRacer model(150, 30, 2, 0.1, 0.0012, 0.001);
     StateRacerMath state_math;
     state_math.setMax(60, 2, 100, 100);
-    state_math.setRes(10, 1000, 1000);
-    state_math.setSteps(10, 7, 7, 40);
+    state_math.setRes(20, 1000, 1000);
+    state_math.setSteps(20, 20, 40, 100);
     state_math.setModel(&model);
     state_math.setVis("output/racer/math/");
     RRT<StateRacer,StateRacerMath,MapRacer> rrt(&map, &state_math);
-    StateRacer start{0, 350, 700, 0, 0};
-    StateRacer goal(0, 390, 700, 0, 0);
+    StateRacer start{350, 35, 0, -M_PI_2};
+    StateRacer goal(390, 35, 0, -M_PI_2);
     rrt.setStartState(&start);
     rrt.setGoalState(&goal, 0.1);
-    rrt.configureSampling(20001, false);
+    rrt.configureSampling(20000, false);
     rrt.configureRewiring(true, 0.05, 2);
     rrt.configureDebugOutput(true, true, "output/racer/rrt/", 0, 0);
     rrt.run();

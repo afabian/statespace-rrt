@@ -1,11 +1,23 @@
 #include <cmath>
 #include "StateRacerMathVis.h"
-#include "Utils.h"
+#include "utils.h"
 
 void StateRacerMathVis::setOutputPath(std::string _outputPath) {
     outputPath = _outputPath;
     mkpath(outputPath.c_str(), S_IRWXU);
     configured = true;
+}
+
+int StateRacerMathVis::lutindex(int v0idx, int dforwardidx, int drightidx) {
+    bool v0idx_ok = v0idx >= 0 && v0idx < vres;
+    bool dforwardidx_ok = dforwardidx >= 0 && dforwardidx < xres;
+    bool drightidx_ok = drightidx >= 0 && drightidx < yres;
+
+    int idx = v0idx * xres * yres
+              + dforwardidx * yres
+              + drightidx;
+
+    return v0idx_ok && dforwardidx_ok && drightidx_ok ? idx : -1;
 }
 
 void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres, int _yres, float _vmax) {
@@ -28,45 +40,34 @@ void StateRacerMathVis::renderLUT(ModelRacerEdgeCost *lut, int _vres, int _xres,
         if (lut[i].cost > max_cost) max_cost = lut[i].cost;
     }
 
-    // for each (v0, vf) pair
+    // for each v0
     for (int v0idx=0; v0idx < vres; v0idx++) {
-        for (int vfidx=0; vfidx < vres; vfidx++) {
 
-            // paint the x-y picture
-            for (int xidx = 0; xidx < xres; xidx++) {
-                for (int yidx = 0; yidx < yres; yidx++) {
-                    float cost = lut[lutindex(v0idx, vfidx, xidx, yidx)].cost;
-                    png_bytep row = vis_rows[yidx];
-                    if (cost > 0) {
-                        int value = cost / max_cost * 255;
-                        row[xidx * 4 + 0] = value;
-                        row[xidx * 4 + 1] = value;
-                        row[xidx * 4 + 2] = 128;
-                        row[xidx * 4 + 3] = 255;
-                    } else {
-                        row[xidx * 4 + 0] = 0;
-                        row[xidx * 4 + 1] = 0;
-                        row[xidx * 4 + 2] = 0;
-                        row[xidx * 4 + 3] = 255;
-                    }
+        // paint the x-y picture
+        for (int dforwardidx = 0; dforwardidx < xres; dforwardidx++) {
+            for (int drightidx = 0; drightidx < yres; drightidx++) {
+                float cost = lut[lutindex(v0idx, dforwardidx, drightidx)].cost;
+                png_bytep row = vis_rows[yres - drightidx - 1];
+                if (cost > 0) {
+                    int value = cost / max_cost * 255;
+                    row[dforwardidx * 4 + 0] = value;
+                    row[dforwardidx * 4 + 1] = 255 - value;
+                    row[dforwardidx * 4 + 2] = 0;
+                    row[dforwardidx * 4 + 3] = 255;
+                } else {
+                    row[dforwardidx * 4 + 0] = 0;
+                    row[dforwardidx * 4 + 1] = 0;
+                    row[dforwardidx * 4 + 2] = 0;
+                    row[dforwardidx * 4 + 3] = 255;
                 }
             }
-
-            // write out image
-            float v0 = v0idx * vmax / vres;
-            float vf = vfidx * vmax / vres;
-            write_png(outputPath + "lut_v" + std::to_string((int) floor(v0)) + "_to_v" + std::to_string((int) floor(vf)));
         }
+
+        // write out image
+        float v0 = v0idx * vmax / vres;
+        write_png(outputPath + "lut_v" + std::to_string((int) floor(v0)));
     }
 
-}
-
-int StateRacerMathVis::lutindex(int v0, int vf, int x, int y) {
-    int idx = v0 * vres * xres * yres
-              + vf * xres * yres
-              + x * yres
-              + y;
-    return idx;
 }
 
 void StateRacerMathVis::write_png(std::string filename_prefix) {

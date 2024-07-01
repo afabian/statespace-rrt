@@ -55,6 +55,9 @@ void Map3D::addVisLine(State3D *pointA, State3D *pointB, int color) {
 void Map3D::addGoalDetail(State3D* source, State3D* dest) {
 }
 
+void Map3D::addDebugText(std::string text) {
+}
+
 void Map3D::renderVis(std::string filename_prefix) {
 
     // map objects
@@ -97,8 +100,8 @@ void Map3D::takeScreenshot(std::string filename_prefix) {
     url = ReplaceString(url, "\\", "/");
     url = ReplaceString(url, "//", "/");
     std::string sspath = (std::string)cwd + "/" + filename_prefix + ".png";
-    sspath = ReplaceString(sspath, "/", "\\");
-    std::string cmd = "firefox.exe --screenshot " + sspath + " --window-size=" + std::to_string(vis_width) + "," + std::to_string(vis_height) + " " + url;
+    //sspath = ReplaceString(sspath, "/", "\\");
+    std::string cmd = "firefox --screenshot " + sspath + " --window-size=" + std::to_string(vis_width) + "," + std::to_string(vis_height) + " " + url;
     std::cout << cmd << std::endl;
     system(cmd.c_str());
 

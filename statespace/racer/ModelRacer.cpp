@@ -15,11 +15,15 @@ ModelRacer::ModelRacer(float _gas_strength, float _brake_strength, float _steeri
 }
 
 void ModelRacer::reset() {
-    state.set(0, 0, 0, 0, 0);
+    state.set(0, 0, 0, 0);
 }
 
 void ModelRacer::setInitialState(float vi) {
     state.v = vi;
+}
+
+void ModelRacer::setInitialState(StateRacer *_state) {
+    state = *_state;
 }
 
 void ModelRacer::setControls(float _gas, float _brake, float _steering) {
@@ -56,10 +60,8 @@ void ModelRacer::run(float dt) {
         state.v -= fabsf(steering) * steering_strength * steering_friction * state.v * dt_now;
 
         // position
+        // 0 degrees is +y / up, 90 degrees is +x / right
         state.x += state.v * sin(state.h) * dt_now;
-        state.y += state.v * -1 * cos(state.h) * dt_now;
-
-        // time
-        state.t += dt_now;
+        state.y += state.v * cos(state.h) * dt_now;
     }
 }

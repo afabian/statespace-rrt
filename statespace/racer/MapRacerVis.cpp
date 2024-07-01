@@ -6,15 +6,19 @@
 #include <fstream>
 
 
-void MapRacer::configureVis(int width, int height) {
-    // MapRacer doesn't have a configurable output size
+void MapRacer::configureVis(float _vmax) {
+    vmax = _vmax;
 }
 
 void MapRacer::resetVis() {
-    for (int height_pos = 0; height_pos < image_height; height_pos++) {
+    for (int height_pos = 0; height_pos < output_height_cropped; height_pos++) {
         png_bytep row = vis_rows[height_pos];
-        for (int width_pos = 0; width_pos < image_width; width_pos++) {
-            uint8_t value = grayscale[grayoffset(width_pos, height_pos)] * 255;
+        for (int width_pos = 0; width_pos < output_width_cropped; width_pos++) {
+            int x = (width_pos - output_shift_x) / output_scale;
+            int y = (height_pos + output_shift_y) / output_scale;
+            uint8_t value = grayscale[grayoffset(x,y)] * 255;
+            if (value < 30) value = 30;
+            if (value > 200) value = 200;
             row[width_pos * 4 + 0] = value;
             row[width_pos * 4 + 1] = value;
             row[width_pos * 4 + 2] = value;
@@ -28,33 +32,66 @@ void MapRacer::addVisPoint(StateRacer *point, unsigned int color, bool big) {
     if (point->y < 0 || point->y >= image_height) return;
 
     if (big) {
-        StateRacer point2 = *point; point2.x++;
+        StateRacer point2 = *point; point2.x += 1.0/output_scale;
         addVisPoint(&point2, color);
-        point2 = *point; point2.x--;
+        point2 = *point; point2.x -= 1.0/output_scale;
         addVisPoint(&point2, color);
-        point2 = *point; point2.y++;
+        point2 = *point; point2.y += 1.0/output_scale;
         addVisPoint(&point2, color);
-        point2 = *point; point2.y--;
+        point2 = *point; point2.y -= 1.0/output_scale;
         addVisPoint(&point2, color);
     }
 
     else {
-        png_bytep row = vis_rows[(int) point->y];
-        row[(int) point->x * 4 + 0] = (color >> 0) & 0x000000ff;
-        row[(int) point->x * 4 + 1] = (color >> 8) & 0x000000ff;
-        row[(int) point->x * 4 + 2] = (color >> 16) & 0x000000ff;
-        row[(int) point->x * 4 + 3] = 255;
+        int x = int(point->x * output_scale) + output_shift_x;
+        int y = int((image_height - point->y - 1) * output_scale) - output_shift_y;
+        if (x >= 0 && y >= 0 && x < output_width_cropped && y < output_height_cropped) {
+            png_bytep row = vis_rows[y];
+            row[x * 4 + 0] = (color >> 0) & 0x000000ff;
+            row[x * 4 + 1] = (color >> 8) & 0x000000ff;
+            row[x * 4 + 2] = (color >> 16) & 0x000000ff;
+            row[x * 4 + 3] = 255;
+        }
     }
 }
 
 void MapRacer::addVisLine(StateRacer *pointA, StateRacer *pointB, unsigned int color) {
     if (pointA == pointB) return;
     StateRacer diff(pointB->x - pointA->x, pointB->y - pointA->y);
-    float step = 1.0f / hypotf(diff.x, diff.y);
+    int dist = int(hypotf(diff.x, diff.y));
+
+    float step = 1.0f / dist / output_scale;
     for (float progress = 0; progress < 1; progress += step) {
         StateRacer point(pointA->x + diff.x * progress, pointA->y + diff.y * progress);
-        addVisPoint(&point, color);
+        addVisPoint(&point, 0xffcccccc);
     }
+
+    bool falseColor = color == 0xffffffff;
+
+    StateRacer* points = (StateRacer*)malloc(sizeof(StateRacer) * dist * output_scale * 1.5);
+    bool edgepath_ok = stateRacerMath->edgePath(pointA, pointB, points, dist * output_scale * 1.5);
+
+    if (edgepath_ok) {
+        for (int i = 0; i < dist * output_scale * 1.5; i++) {
+            if (falseColor) {
+                uint8_t brightness = fmin(255, points[i].v / vmax * 255);
+                *((uint8_t *) &color + 0) = 255 - brightness;
+                *((uint8_t *) &color + 1) = brightness;
+                *((uint8_t *) &color + 2) = 0;
+            }
+            addVisPoint(&points[i], color);
+        }
+    }
+
+    else {
+        std::cout << "Cannot draw path from " << pointA->toString() << " to " << pointB->toString() << std::endl;
+    }
+
+    free(points);
+}
+
+void MapRacer::addDebugText(std::string text) {
+    // TODO
 }
 
 void MapRacer::addGoalDetail(StateRacer* source, StateRacer* dest) {
@@ -84,7 +121,7 @@ void MapRacer::write_png(std::string filename_prefix) {
     png_set_IHDR(
             png,
             info,
-            image_width, image_height,
+            output_width_cropped, output_height_cropped,
             8,
             PNG_COLOR_TYPE_RGBA,
             PNG_INTERLACE_NONE,

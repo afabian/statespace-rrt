@@ -2,10 +2,19 @@
 #include <cstdint>
 #include "MapRacer.h"
 
-MapRacer::MapRacer(std::string pngfile) {
+MapRacer::MapRacer(std::string pngfile, float _output_scale, float _output_crop_x_min, float _output_crop_y_min, float _output_crop_x_max, float _output_crop_y_max) {
+    output_scale = _output_scale;
+    output_crop_x_min = _output_crop_x_min;
+    output_crop_y_min = _output_crop_y_min;
+    output_crop_x_max = _output_crop_x_max;
+    output_crop_y_max = _output_crop_y_max;
     load_png(pngfile);
     make_grayscale();
     resetVis();
+}
+
+void MapRacer::setStateRacerMath(StateRacerMath *_stateRacerMath) {
+    stateRacerMath = _stateRacerMath;
 }
 
 void MapRacer::load_png(std::string pngfile) {
@@ -63,9 +72,18 @@ void MapRacer::load_png(std::string pngfile) {
         image_rows[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
     }
 
-    vis_rows = (png_bytep*)malloc(sizeof(png_bytep) * image_height);
-    for(int y = 0; y < image_height; y++) {
-        vis_rows[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
+    output_width = image_width * output_scale;
+    output_height = image_height * output_scale;
+
+    output_width_cropped = output_width * (output_crop_x_max - output_crop_x_min);
+    output_height_cropped = output_height * (output_crop_y_max - output_crop_y_min);
+
+    output_shift_x = -(output_crop_x_min * output_width);
+    output_shift_y = ((1.0 - output_crop_y_max) * output_height);
+
+    vis_rows = (png_bytep*)malloc(sizeof(png_bytep) * output_height_cropped);
+    for(int y = 0; y < output_height_cropped; y++) {
+        vis_rows[y] = (png_byte*)malloc(png_get_rowbytes(png,info) * output_scale * (output_crop_x_max - output_crop_x_min));
     }
 
     png_read_image(png, image_rows);
@@ -96,5 +114,6 @@ void MapRacer::getBounds(StateRacer *minimums, StateRacer *maximums) {
 }
 
 bool MapRacer::getPixelIsObstacle(int width_pos, int height_pos) {
-    return grayscale[grayoffset(width_pos, height_pos)] < 0.5f;
+    // coordinate system is +x right, +y up
+    return grayscale[grayoffset(width_pos, image_height - height_pos - 1)] < 0.5f;
 }
